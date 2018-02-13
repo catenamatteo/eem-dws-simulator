@@ -129,21 +129,21 @@ public class Simulation {
 
 	private static QueryBroker getPERFQueryBroker(EemDwsSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
 
-		return new engine.mmk.Broker(simulator, model, numOfReplicas, shards);
+		return new engine.mmk.QueryBroker(simulator, model, numOfReplicas, shards);
 
 	}
 
 	private static QueryBroker getPESOSQueryBroker(EemDwsSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
 
 
-		return new engine.kmm1.pesos.Broker(simulator, model, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
+		return new engine.kmm1.pesos.QueryBroker(simulator, model, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
 				shards);
 
 	}
 
 	private static QueryBroker getPEGASUSQueryBroker(EemDwsSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
 
-		return new engine.mmk.pegasus.Broker(simulator, model, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
+		return new engine.mmk.pegasus.QueryBroker(simulator, model, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
 				shards);
 
 	}

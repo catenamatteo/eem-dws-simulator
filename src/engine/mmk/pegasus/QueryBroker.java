@@ -10,7 +10,7 @@ import eu.nicecode.simulator.Time;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 
-public class Broker extends engine.mmk.Broker {
+public class QueryBroker extends engine.mmk.QueryBroker {
 
 	protected LongList mv95thtileKeys;
 	protected LongList mv95thtileValues;	
@@ -20,7 +20,7 @@ public class Broker extends engine.mmk.Broker {
 	protected Time waitUntil;
 	
 	
-	public Broker(Simulator simulator, CPUModel cpuModel, Time slo, int numOfReplicas, Shard[] shards) {
+	public QueryBroker(Simulator simulator, CPUModel cpuModel, Time slo, int numOfReplicas, Shard[] shards) {
 		super(simulator, cpuModel, numOfReplicas, shards);
 		mv95thtileKeys = new LongArrayList();
 		mv95thtileValues = new LongArrayList();

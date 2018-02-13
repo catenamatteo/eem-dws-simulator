@@ -6,9 +6,9 @@ import engine.Shard;
 import eu.nicecode.simulator.Agent;
 import eu.nicecode.simulator.Simulator;
 
-public class Broker extends engine.QueryBroker implements Agent {
+public class QueryBroker extends engine.QueryBroker implements Agent {
 	
-	public Broker(Simulator simulator, CPUModel cpuModel, int numOfReplicas, Shard[] shards) {
+	public QueryBroker(Simulator simulator, CPUModel cpuModel, int numOfReplicas, Shard[] shards) {
 		super(simulator, cpuModel, numOfReplicas, shards);
 	}	
 	

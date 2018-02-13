@@ -5,9 +5,9 @@ import engine.IndexReplica;
 import engine.Shard;
 import eu.nicecode.simulator.Simulator;
 
-public class Broker extends engine.QueryBroker {
+public class QueryBroker extends engine.QueryBroker {
 
-	public Broker(Simulator simulator, CPUModel cpuModel, int numOfReplicas, Shard[] shards) {
+	public QueryBroker(Simulator simulator, CPUModel cpuModel, int numOfReplicas, Shard[] shards) {
 		super(simulator, cpuModel, numOfReplicas, shards);
 	}
 

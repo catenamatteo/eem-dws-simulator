@@ -55,7 +55,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 
 	private void runFrequencyScheduler(long now) {
 		
-		Time timeBudget = ((engine.kmm1.pesos.Broker)server.getReplicaManager().getBroker()).getTimeBudget();
+		Time timeBudget = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getTimeBudget();
 		
 		long volume = 0;
 		double maxDensity = 0;
@@ -107,7 +107,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 	
 	private int identifyTargetFrequency(int numOfTerms, int postings, double targetTime) {
 	
-		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.Broker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
+		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
 		
 		for (int frequency : core.getCpu().getCPUModel().getFrequencies()) {
 			
@@ -120,7 +120,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 
 	protected double getLateness(long now) {
 
-		Time timeBudget = ((engine.kmm1.pesos.Broker)server.getReplicaManager().getBroker()).getTimeBudget();
+		Time timeBudget = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getTimeBudget();
 		
 		double lateness = 0;
 		int cnt = 0;
@@ -165,7 +165,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 	private double predictServiceTimeAtMaxFreq(int numOfTerms, int postings) {
 		
 		//return getShardServer().getShard().getServiceTime(query.getQid(), core.getCpu().getCPUModel().getMaxFrequency()).getTimeMicroseconds();
-		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.Broker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
+		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
 		
 		int max = core.getCpu().getCPUModel().getMaxFrequency();
 		return qep.regress(numOfTerms, postings, max); 

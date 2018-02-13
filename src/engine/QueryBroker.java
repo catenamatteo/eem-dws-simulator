@@ -89,7 +89,7 @@ public abstract class QueryBroker implements Agent {
 	public void receiveResults(long uid, long completionTime) {
 
 		long arrivalTime = arrivalTimes.remove(uid); //get and remove;
-		System.out.printf("[broker]\t%d\t%d\t%.3f\n", uid, TimeUnit.MICROSECONDS.toSeconds(arrivalTime), completionTime/1e3);
+		System.out.printf("[broker]\t%d\t%.3f\n", TimeUnit.MICROSECONDS.toSeconds(arrivalTime), completionTime/1e3);
 	}
 
 	public Simulator getSimulator() {
