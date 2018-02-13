@@ -5,7 +5,7 @@ import java.util.Collections;
 import cpu.CPUModel;
 import cpu.Core;
 import engine.QueryMatcher;
-import engine.ReplicaManager;
+import engine.IndexReplica;
 import engine.Shard;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -13,7 +13,7 @@ import query.Query;
 
 public class ShardServer extends engine.ShardServer {
 
-	public ShardServer(ReplicaManager replicaManager, Shard shard, CPUModel cpuModel, int id) {
+	public ShardServer(IndexReplica replicaManager, Shard shard, CPUModel cpuModel, int id) {
 		super(replicaManager, shard, cpuModel, id);
 	}
 
@@ -25,7 +25,7 @@ public class ShardServer extends engine.ShardServer {
 	
 	public Query getNextQuery() {
 		
-		return ((engine.mmk.ReplicaManager)replicaManager).getNextQuery(this.getId());
+		return ((engine.mmk.IndexReplica)replicaManager).getNextQuery(this.getId());
 	}
 
 	boolean hasIdlingResources() {

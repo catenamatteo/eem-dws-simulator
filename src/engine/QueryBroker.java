@@ -13,17 +13,17 @@ import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import query.Query;
 
-public abstract class Broker implements Agent {
+public abstract class QueryBroker implements Agent {
 	
-	protected ReplicaManager[] replicas;
+	protected IndexReplica[] replicas;
 	protected Long2LongMap arrivalTimes;
 	protected Simulator simulator;
 	
-	public Broker(Simulator simulator, CPUModel cpuModel, int numOfReplicas, Shard... shards) {
+	public QueryBroker(Simulator simulator, CPUModel cpuModel, int numOfReplicas, Shard... shards) {
 
 		this.simulator = simulator;
 		this.arrivalTimes = new Long2LongOpenHashMap();
-		replicas = new ReplicaManager[numOfReplicas];
+		replicas = new IndexReplica[numOfReplicas];
 		for (int i = 0; i < numOfReplicas; i++)
 			replicas[i] = newReplicaManagerInstance(cpuModel, shards);
 			
@@ -84,16 +84,21 @@ public abstract class Broker implements Agent {
 
 	}
 	
-	protected abstract ReplicaManager newReplicaManagerInstance(CPUModel cpuModel, Shard... shards);
+	protected abstract IndexReplica newReplicaManagerInstance(CPUModel cpuModel, Shard... shards);
 
 	public void receiveResults(long uid, long completionTime) {
 
 		long arrivalTime = arrivalTimes.remove(uid); //get and remove;
-		System.out.printf("%s\t%d\t%d\t%.3f\n", this, uid, TimeUnit.MICROSECONDS.toSeconds(arrivalTime), completionTime/1e3);
+		System.out.printf("[broker]\t%d\t%d\t%.3f\n", uid, TimeUnit.MICROSECONDS.toSeconds(arrivalTime), completionTime/1e3);
 	}
 
 	public Simulator getSimulator() {
 	
 		return simulator;
+	}
+
+	public void shutdown(long timeMicroseconds) {
+
+		for (IndexReplica r : replicas) r.shutdown(timeMicroseconds);
 	}	
 }

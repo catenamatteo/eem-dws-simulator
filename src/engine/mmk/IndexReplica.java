@@ -4,17 +4,17 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import cpu.CPUModel;
-import engine.Broker;
+import engine.QueryBroker;
 import engine.Shard;
 import engine.ShardServer;
 import query.Query;
 
-public class ReplicaManager extends engine.ReplicaManager {
+public class IndexReplica extends engine.IndexReplica {
 
 	protected Queue<Query>[] queues;
 	
 	@SuppressWarnings("unchecked")
-	public ReplicaManager(Broker broker, CPUModel cpuModel, Shard[] shards) {
+	public IndexReplica(QueryBroker broker, CPUModel cpuModel, Shard[] shards) {
 		super(broker, cpuModel, shards);
 		queues = new Queue[shards.length];
 		for (int i = 0; i < shards.length; i++) {

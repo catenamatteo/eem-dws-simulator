@@ -10,14 +10,14 @@ import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import query.Query;
 
-public abstract class ReplicaManager {
+public abstract class IndexReplica {
 
-	protected Broker broker;
+	protected QueryBroker broker;
 	protected ShardServer[] servers;
 
 	protected Long2ObjectMap<LongList> times;
 
-	public ReplicaManager(Broker broker, CPUModel cpuModel, Shard... shards) {
+	public IndexReplica(QueryBroker broker, CPUModel cpuModel, Shard... shards) {
 		
 		this.broker = broker;
 		servers = new ShardServer[shards.length];
@@ -55,10 +55,15 @@ public abstract class ReplicaManager {
 		return broker.getSimulator();
 	}
 
-	public Broker getBroker() {
+	public QueryBroker getBroker() {
 
 		return broker;		
 	}
 
 	public abstract int getLoad();
+
+	public void shutdown(long timeMicroseconds) {
+
+		for (ShardServer s : servers) s.shutdown(timeMicroseconds);
+	}
 }

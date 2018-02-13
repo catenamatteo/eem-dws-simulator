@@ -8,12 +8,12 @@ import eu.nicecode.simulator.Simulator;
 public abstract class ShardServer {
 
 	protected Shard shard;
-	protected ReplicaManager replicaManager;
+	protected IndexReplica replicaManager;
 	protected QueryMatcher[] matcher;
 	protected CPU cpu;
 	private int id;
 	
-	public ShardServer(ReplicaManager replicaManager, Shard shard, CPUModel cpuModel, int id) {
+	public ShardServer(IndexReplica replicaManager, Shard shard, CPUModel cpuModel, int id) {
 
 		this.shard = shard;
 		this.replicaManager = replicaManager;
@@ -42,7 +42,7 @@ public abstract class ShardServer {
 		return replicaManager.getSimulator();
 	}
 
-	public ReplicaManager getReplicaManager() {
+	public IndexReplica getReplicaManager() {
 		
 		return replicaManager;
 	}
@@ -53,5 +53,11 @@ public abstract class ShardServer {
 	}
 
 	public abstract int getLoad();
+
+	public void shutdown(long timeMicroseconds) {
+
+		cpu.shutdown(timeMicroseconds);
+		
+	}
 	
 }

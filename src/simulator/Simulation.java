@@ -6,7 +6,8 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import cpu.CPUModel;
-import engine.Broker;
+import cpu.impl.Intel_i7_4770K;
+import engine.QueryBroker;
 import engine.Shard;
 import eu.nicecode.simulator.Event;
 import eu.nicecode.simulator.Simulator;
@@ -15,10 +16,11 @@ import eu.nicecode.simulator.exception.TimeException;
 import query.MSNQuerySource;
 import util.Clock;
 
-class GenericSimulator extends Simulator {
+class EemDwsSimulator extends Simulator {
 
 	private MSNQuerySource source;
-	private int nonClockCnt;
+	private QueryBroker broker;
+	private int nonClockCnt; //TODO: is this still used?
 
 	public void setQuerySource(MSNQuerySource source) {
 
@@ -59,6 +61,7 @@ class GenericSimulator extends Simulator {
 			//end
 		}
 		
+		broker.shutdown(now().getTimeMicroseconds());
 	}
 
 	
@@ -67,40 +70,33 @@ class GenericSimulator extends Simulator {
 		if (!(e instanceof Clock)) nonClockCnt++;
 		events.enqueue(e);
 	}
+
+	public void setBroker(QueryBroker broker) {
+
+		this.broker = broker;
+	}
 }
 
 public class Simulation {
-
-	public static MSNQuerySource getQuerySource(String queryFilePath, Simulator simulator)
-			throws FileNotFoundException, IOException {
-
-		MSNQuerySource source = new MSNQuerySource(simulator, queryFilePath);
-		return source;
-	}
+	
 
 	public static void main(String args[]) throws IOException {
 
-		String method = args[0];
-		
+		String method = args[0];		
 		String queryFilePath = args[1];
+		int numOfReplicas = Integer.parseInt(args[2]);
 
-		GenericSimulator simulator = new GenericSimulator();
-
-		int[] frequencies = new int[] { 800000, 1000000, 1200000, 1400000, 1600000, 1800000, 2000000, 2100000, 2300000, 2500000,
-				2700000, 2900000, 3100000, 3300000, 3500000 };
-		double[] powers = new double[] { 4.6, 5.7, 8.7, 10.2, 11.5, 13.0, 14.7, 15.6, 17.6, 20.5, 23.0, 25.4, 28.3, 31.0, 34.2 };
-		CPUModel model = new cpu.regression.CPUModel("Intel", 4,
-				"regressors.txt", frequencies, powers);
-
-		Shard shardB = new Shard(args[2], args[3], model.getFrequencies());
-		Shard shardA2 = new Shard(args[4], args[5], model.getFrequencies());
-		Shard shardA3 = new Shard(args[6], args[7], model.getFrequencies());
-		Shard shardA4 = new Shard(args[8], args[9], model.getFrequencies());
-		Shard shardA5 = new Shard(args[10], args[11], model.getFrequencies());
+		EemDwsSimulator simulator = new EemDwsSimulator();
 		
-		int numOfReplicas = Integer.parseInt(args[12]);
+		CPUModel model = new Intel_i7_4770K();
 
-		Broker broker = null;
+		Shard shardB = new Shard("resources/cw09b.ef.pp", "resources/cw09b.ef.time", model.getFrequencies());
+		Shard shardA2 = new Shard("resources/cw09a2.ef.pp", "resources/cw09a2.ef.time", model.getFrequencies());
+		Shard shardA3 = new Shard("resources/cw09a3.ef.pp", "resources/cw09a3.ef.time", model.getFrequencies());
+		Shard shardA4 = new Shard("resources/cw09a4.ef.pp", "resources/cw09a4.ef.time", model.getFrequencies());
+		Shard shardA5 = new Shard("resources/cw09a4.ef.pp", "resources/cw09a5.ef.time", model.getFrequencies());
+		
+		QueryBroker broker = null;
 		switch (method.toLowerCase()) {
 		case "pesos":
 			broker = getPESOSQueryBroker(simulator, model, numOfReplicas, shardB, shardA2, shardA3, shardA4, shardA5);
@@ -116,20 +112,28 @@ public class Simulation {
 
 		MSNQuerySource source = getQuerySource(queryFilePath, simulator);
 		simulator.setQuerySource(source);
+		simulator.setBroker(broker);
 
 		source.generate(simulator, broker);
 
 		simulator.doAllEvents();
 
 	}
+	
+	public static MSNQuerySource getQuerySource(String queryFilePath, Simulator simulator)
+			throws FileNotFoundException, IOException {
 
-	private static Broker getPERFQueryBroker(GenericSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
+		return new MSNQuerySource(simulator, queryFilePath);
+	}
+
+
+	private static QueryBroker getPERFQueryBroker(EemDwsSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
 
 		return new engine.mmk.Broker(simulator, model, numOfReplicas, shards);
 
 	}
 
-	private static Broker getPESOSQueryBroker(GenericSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
+	private static QueryBroker getPESOSQueryBroker(EemDwsSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
 
 
 		return new engine.kmm1.pesos.Broker(simulator, model, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
@@ -137,7 +141,7 @@ public class Simulation {
 
 	}
 
-	private static Broker getPEGASUSQueryBroker(GenericSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
+	private static QueryBroker getPEGASUSQueryBroker(EemDwsSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
 
 		return new engine.mmk.pegasus.Broker(simulator, model, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
 				shards);

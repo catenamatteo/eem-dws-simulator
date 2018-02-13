@@ -7,6 +7,7 @@ public class CPU {
 	 * some of these fields and methods are very PEGASUS specific and maybe shouldn't be here 
 	 * but in a dedicated class or subclass
 	 */
+	
 	protected CPUModel cpuModel;
 	protected Core[] cores;
 
@@ -61,10 +62,9 @@ public class CPU {
 		String potentialNewStatus = sb.toString();
 		
 		if (!(activeCores == this.activeCores && currentMaxFrequency == this.currentMaxFrequency)) { //something actually changed
-						
+	
 			sb.setLength(0);
-			sb.append(this);
-			sb.append(" ");
+			sb.append("[cpu] ");
 			sb.append(status);
 			sb.append(" ");
 			sb.append(statusChangeTime);
@@ -111,5 +111,11 @@ public class CPU {
 
 		int frequency = cpuModel.getFrequency(mpp_at_cmf * d);
 		setFrequency(frequency, timeMicroseconds);
+	}
+
+	public void shutdown(long timeMicroseconds) {
+
+		for (Core c : cores) c.shutdown(timeMicroseconds);;
+		
 	}
 }

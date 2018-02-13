@@ -2,7 +2,7 @@ package cpu;
 
 import java.util.Arrays;
 
-public class CPUModel {
+public abstract class CPUModel {
 
 	protected String name;
 	protected int numCores;

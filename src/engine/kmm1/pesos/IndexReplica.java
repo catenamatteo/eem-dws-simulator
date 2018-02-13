@@ -1,13 +1,13 @@
 package engine.kmm1.pesos;
 
 import cpu.CPUModel;
-import engine.Broker;
+import engine.QueryBroker;
 import engine.Shard;
 import engine.ShardServer;
 
-public class ReplicaManager extends engine.kmm1.ReplicaManager {
+public class IndexReplica extends engine.kmm1.IndexReplica {
 
-	public ReplicaManager(Broker broker, CPUModel cpuModel, Shard... shards) {
+	public IndexReplica(QueryBroker broker, CPUModel cpuModel, Shard... shards) {
 		super(broker, cpuModel, shards);
 	}
 

@@ -1,29 +1,19 @@
 package engine.kmm1.pesos;
 
 import cpu.CPUModel;
-import engine.ReplicaManager;
+import engine.IndexReplica;
 import engine.Shard;
 import eu.nicecode.simulator.Simulator;
 import eu.nicecode.simulator.Time;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 
 public class Broker extends engine.kmm1.Broker {
 
 	protected Time timeBudget;
-	protected Object2ObjectMap<Shard, QueryEfficiencyPredictors> qepMap;
+	protected QueryEfficiencyPredictors qep;
 
 	public Broker(Simulator simulator, CPUModel cpuModel, Time timeBudget, int numOfReplicas, Shard... shards) {
 		super(simulator, cpuModel, numOfReplicas, shards);
-		
-		qepMap = new Object2ObjectArrayMap<>(shards.length);
-		for (Shard s : shards) {
-			
-			QueryEfficiencyPredictors qep = new QueryEfficiencyPredictors((cpu.regression.CPUModel)cpuModel);
-			qepMap.put(s, qep);
-			
-		}
-		
+		qep = new QueryEfficiencyPredictors(cpuModel.getFrequencies());		
 		this.timeBudget = timeBudget;
 	}
 
@@ -33,14 +23,14 @@ public class Broker extends engine.kmm1.Broker {
 	}
 	
 	@Override
-	protected ReplicaManager newReplicaManagerInstance(CPUModel cpuModel, Shard... shards) {
+	protected IndexReplica newReplicaManagerInstance(CPUModel cpuModel, Shard... shards) {
 		
-		return new engine.kmm1.pesos.ReplicaManager(this, cpuModel, shards);
+		return new engine.kmm1.pesos.IndexReplica(this, cpuModel, shards);
 	}
 	
-	public QueryEfficiencyPredictors getQueryEfficiencyPredictors(Shard shard) {
+	public QueryEfficiencyPredictors getQueryEfficiencyPredictors() {
 
-		return qepMap.get(shard);
+		return qep;
 			
 	}
 	

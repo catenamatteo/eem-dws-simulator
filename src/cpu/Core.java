@@ -78,4 +78,19 @@ public class Core {
 		
 		return cpu;
 	}
+
+	public void shutdown(long timeMicroseconds) {
+
+		//it basically forces a state change in the cpu to dump a last statistic
+		if (isBusy()) {
+			
+			free(timeMicroseconds);
+			
+		} else {
+			
+			busy(timeMicroseconds);
+			free(timeMicroseconds);
+		}
+		
+	}
 }

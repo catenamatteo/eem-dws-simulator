@@ -107,7 +107,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 	
 	private int identifyTargetFrequency(int numOfTerms, int postings, double targetTime) {
 	
-		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.Broker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors(server.getShard());
+		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.Broker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
 		
 		for (int frequency : core.getCpu().getCPUModel().getFrequencies()) {
 			
@@ -165,7 +165,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 	private double predictServiceTimeAtMaxFreq(int numOfTerms, int postings) {
 		
 		//return getShardServer().getShard().getServiceTime(query.getQid(), core.getCpu().getCPUModel().getMaxFrequency()).getTimeMicroseconds();
-		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.Broker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors(server.getShard());
+		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.Broker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
 		
 		int max = core.getCpu().getCPUModel().getMaxFrequency();
 		return qep.regress(numOfTerms, postings, max); 

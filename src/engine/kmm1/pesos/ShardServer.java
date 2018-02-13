@@ -3,13 +3,13 @@ package engine.kmm1.pesos;
 import cpu.CPUModel;
 import cpu.Core;
 import engine.QueryMatcher;
-import engine.ReplicaManager;
+import engine.IndexReplica;
 import engine.Shard;
 
 public class ShardServer extends engine.kmm1.ShardServer {
 
 
-	public ShardServer(ReplicaManager replicaManager, Shard shard, CPUModel cpuModel, int id) {
+	public ShardServer(IndexReplica replicaManager, Shard shard, CPUModel cpuModel, int id) {
 		super(replicaManager, shard, cpuModel, id);
 
 	}

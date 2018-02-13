@@ -3,7 +3,7 @@ package engine.mmk.pegasus;
 import java.util.concurrent.TimeUnit;
 import com.google.common.math.Quantiles;
 import cpu.CPUModel;
-import engine.ReplicaManager;
+import engine.IndexReplica;
 import engine.Shard;
 import eu.nicecode.simulator.Simulator;
 import eu.nicecode.simulator.Time;
@@ -104,18 +104,18 @@ public class Broker extends engine.mmk.Broker {
 
 	private void changeCPUPower(double d) {
 		
-		for (ReplicaManager r : replicas) 
-			((engine.mmk.pegasus.ReplicaManager)r).changeCPUPower(d, simulator.now().getTimeMicroseconds());		
+		for (IndexReplica r : replicas) 
+			((engine.mmk.pegasus.IndexReplica)r).changeCPUPower(d, simulator.now().getTimeMicroseconds());		
 	}
 
 	protected void setMaxCPUPower() {
-		for (ReplicaManager r : replicas) 
-			((engine.mmk.pegasus.ReplicaManager)r).setMaxCPUPower(simulator.now().getTimeMicroseconds());
+		for (IndexReplica r : replicas) 
+			((engine.mmk.pegasus.IndexReplica)r).setMaxCPUPower(simulator.now().getTimeMicroseconds());
 	}
 	
 	@Override
-	protected ReplicaManager newReplicaManagerInstance(CPUModel cpuModel, Shard... shards) {
+	protected IndexReplica newReplicaManagerInstance(CPUModel cpuModel, Shard... shards) {
 		
-		return new engine.mmk.pegasus.ReplicaManager(this, cpuModel, shards);
+		return new engine.mmk.pegasus.IndexReplica(this, cpuModel, shards);
 	}
 }

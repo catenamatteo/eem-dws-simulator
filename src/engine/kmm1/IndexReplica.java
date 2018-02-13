@@ -1,14 +1,14 @@
 package engine.kmm1;
 
 import cpu.CPUModel;
-import engine.Broker;
+import engine.QueryBroker;
 import engine.Shard;
 import engine.ShardServer;
 import query.Query;
 
-public class ReplicaManager extends engine.ReplicaManager {
+public class IndexReplica extends engine.IndexReplica {
 
-	public ReplicaManager(Broker broker, CPUModel cpuModel, Shard[] shards) {
+	public IndexReplica(QueryBroker broker, CPUModel cpuModel, Shard[] shards) {
 		super(broker, cpuModel, shards);
 		// TODO Auto-generated constructor stub
 	}
