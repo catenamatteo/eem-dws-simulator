@@ -11,14 +11,14 @@ public abstract class ShardServer {
 	protected IndexReplica replicaManager;
 	protected QueryMatcher[] matcher;
 	protected CPU cpu;
-	private int id;
+	protected int id;
 	
 	public ShardServer(IndexReplica replicaManager, Shard shard, CPUModel cpuModel, int id) {
 
 		this.shard = shard;
 		this.replicaManager = replicaManager;
 		
-		this.cpu = cpuModel.getNewInstance();
+		this.cpu = cpuModel.getNewInstance(replicaManager.getId()+":"+id);
 		matcher = new QueryMatcher[cpuModel.getNumCores()];
 		for (int i = 0; i < cpuModel.getNumCores(); i++)
 			matcher[i] = newQueryMatcherInstance(cpu.getCore(i));

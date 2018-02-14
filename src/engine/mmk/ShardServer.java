@@ -57,7 +57,7 @@ public class ShardServer extends engine.ShardServer {
 	public int getLoad() {
 		
 		int cnt = 0;
-		for (QueryMatcher m : matcher) if (((engine.mmk.QueryMatcher) m).isIdle()) cnt++;
+		for (QueryMatcher m : matcher) if (!((engine.mmk.QueryMatcher) m).isIdle()) cnt++;
 		return cnt;
 		
 	}

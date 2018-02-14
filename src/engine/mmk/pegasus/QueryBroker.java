@@ -114,8 +114,8 @@ public class QueryBroker extends engine.mmk.QueryBroker {
 	}
 	
 	@Override
-	protected IndexReplica newReplicaManagerInstance(CPUModel cpuModel, Shard... shards) {
+	protected IndexReplica newReplicaManagerInstance(CPUModel cpuModel, int id, Shard... shards) {
 		
-		return new engine.mmk.pegasus.IndexReplica(this, cpuModel, shards);
+		return new engine.mmk.pegasus.IndexReplica(this, cpuModel, id, shards);
 	}
 }

@@ -19,8 +19,10 @@ public class CPU {
 	protected double mpp_at_cmf; //maximum possible power at the current maximum frequency, i.e., if all the cores were active at the current max freq
 	
 	private StringBuilder sb;
+	
+	private String id;
 
-	CPU(CPUModel cpuModel) {
+	CPU(CPUModel cpuModel, String id) {
 
 		this.cpuModel = cpuModel;
 		this.statusChangeTime = 0;
@@ -35,6 +37,8 @@ public class CPU {
 			cores[i] = new Core(this);
 		
 		this.sb = new StringBuilder();
+		
+		this.id = id;
 	}
 
 	void update(long timeMicroseconds) {
@@ -45,10 +49,9 @@ public class CPU {
 		int currentMaxFrequency = cpuModel.getMinFrequency();
 		for (Core c : cores) {
 			
-			if (c.isBusy()) {
-				
+			currentMaxFrequency = Math.max(currentMaxFrequency, c.getFrequency());
+			if (c.isBusy()) {				
 				activeCores++;
-				currentMaxFrequency = Math.max(currentMaxFrequency, c.getFrequency());
 				sb.append(c.getFrequency());
 				sb.append(" ");
 			}
@@ -59,27 +62,25 @@ public class CPU {
 		else
 			sb.setLength(sb.length()-1); //remove one extra white char
 		
-		String potentialNewStatus = sb.toString();
+		String newStatus = sb.toString();
 		
-		if (!(activeCores == this.activeCores && currentMaxFrequency == this.currentMaxFrequency)) { //something actually changed
-	
-			sb.setLength(0);
-			sb.append("[cpu] ");
-			sb.append(status);
-			sb.append(" ");
-			sb.append(statusChangeTime);
-			sb.append(" ");
-			sb.append(timeMicroseconds);
-			System.out.println(sb.toString());
-
-			//new status
-			this.status = potentialNewStatus;
-			this.statusChangeTime = timeMicroseconds;
-			this.activeCores = activeCores;
-			this.currentMaxFrequency = currentMaxFrequency;
-			this.mpp_at_cmf = cpuModel.getPower(currentMaxFrequency);
-			
-		}
+		sb.setLength(0);
+		sb.append("[cpu@");
+		sb.append(id);
+		sb.append("] ");
+		sb.append(status);
+		sb.append(" ");
+		sb.append(statusChangeTime);
+		sb.append(" ");
+		sb.append(timeMicroseconds);
+		if (statusChangeTime != timeMicroseconds) System.out.println(sb.toString());
+		
+		//new status
+		this.status = newStatus;
+		this.statusChangeTime = timeMicroseconds;
+		this.activeCores = activeCores;
+		this.currentMaxFrequency = currentMaxFrequency;
+		this.mpp_at_cmf = cpuModel.getPower(currentMaxFrequency);
 	}
 
 	public CPUModel getCPUModel() {
@@ -94,12 +95,12 @@ public class CPU {
 
 	private void setFrequency(int frequency, long timeMicroseconds) {
 		
-		boolean update = false;
+		
 		for (Core c : cores) {
-			update |= c.currentFrequency != frequency;
+			
 			c.currentFrequency = frequency;
 		}
-		if (update) update(timeMicroseconds);
+		update(timeMicroseconds);
 	}
 	
 	public void setMaxPower(long timeMicroseconds) {
@@ -115,7 +116,8 @@ public class CPU {
 
 	public void shutdown(long timeMicroseconds) {
 
-		for (Core c : cores) c.shutdown(timeMicroseconds);;
+		//it basically forces a last print of the stats
+		update(timeMicroseconds);
 		
 	}
 }

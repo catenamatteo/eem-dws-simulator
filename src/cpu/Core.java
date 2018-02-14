@@ -18,11 +18,6 @@ public class Core {
 		return currentFrequency;
 	}
 	
-	public int getActualFrequency() {
-		
-		return cpu.getCPUModel().getFrequency(cpu.mpp_at_cmf);
-	}
-
 	public void setMaxFrequency(long timeMicroseconds) {
 
 		setFrequency(cpu.getCPUModel().getMaxFrequency(), timeMicroseconds);
@@ -77,20 +72,5 @@ public class Core {
 	public CPU getCpu() {
 		
 		return cpu;
-	}
-
-	public void shutdown(long timeMicroseconds) {
-
-		//it basically forces a state change in the cpu to dump a last statistic
-		if (isBusy()) {
-			
-			free(timeMicroseconds);
-			
-		} else {
-			
-			busy(timeMicroseconds);
-			free(timeMicroseconds);
-		}
-		
 	}
 }

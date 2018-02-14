@@ -34,7 +34,7 @@ public class RunningQuery extends Event {
 
 		if (firstQuantum) {
 			
-			this.frequency = matcher.getCore().getActualFrequency();
+			this.frequency = matcher.getCore().getFrequency();
 			this.executedTime = 0;
 			this.requiredTime = originalQuery.getServiceTime(matcher.getShardServer().getShard(), frequency).getTimeMicroseconds();
 			firstQuantum = false;
@@ -62,9 +62,9 @@ public class RunningQuery extends Event {
 			
 		} else {
 		
-			if (matcher.getCore().getActualFrequency() != frequency && !firstQuantum) {
+			if (matcher.getCore().getFrequency() != frequency && !firstQuantum) {
 				
-				int newFrequency = matcher.getCore().getActualFrequency();
+				int newFrequency = matcher.getCore().getFrequency();
 		
 				long newRequiredTime = originalQuery.getServiceTime(matcher.getShardServer().getShard(), frequency).getTimeMicroseconds();
 				long newExecutedTime = Math.round((executedTime / ((double) requiredTime)) * newRequiredTime);

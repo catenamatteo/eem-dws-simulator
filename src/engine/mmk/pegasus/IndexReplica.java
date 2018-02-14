@@ -7,8 +7,8 @@ import engine.ShardServer;
 
 public class IndexReplica extends engine.mmk.IndexReplica {
 
-	public IndexReplica(QueryBroker broker, CPUModel cpuModel, Shard[] shards) {
-		super(broker, cpuModel, shards);
+	public IndexReplica(QueryBroker broker, CPUModel cpuModel, int id, Shard... shards) {
+		super(broker, cpuModel, id, shards);
 	}
 
 	public void setMaxCPUPower(long timeMicroseconds) {

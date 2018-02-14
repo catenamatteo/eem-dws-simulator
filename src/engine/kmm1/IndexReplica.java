@@ -8,8 +8,8 @@ import query.Query;
 
 public class IndexReplica extends engine.IndexReplica {
 
-	public IndexReplica(QueryBroker broker, CPUModel cpuModel, Shard[] shards) {
-		super(broker, cpuModel, shards);
+	public IndexReplica(QueryBroker broker, CPUModel cpuModel, int id, Shard[] shards) {
+		super(broker, cpuModel, id, shards);
 		// TODO Auto-generated constructor stub
 	}
 

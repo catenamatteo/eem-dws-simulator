@@ -25,7 +25,7 @@ public abstract class QueryBroker implements Agent {
 		this.arrivalTimes = new Long2LongOpenHashMap();
 		replicas = new IndexReplica[numOfReplicas];
 		for (int i = 0; i < numOfReplicas; i++)
-			replicas[i] = newReplicaManagerInstance(cpuModel, shards);
+			replicas[i] = newReplicaManagerInstance(cpuModel, i, shards);
 			
 		
 	}
@@ -84,7 +84,7 @@ public abstract class QueryBroker implements Agent {
 
 	}
 	
-	protected abstract IndexReplica newReplicaManagerInstance(CPUModel cpuModel, Shard... shards);
+	protected abstract IndexReplica newReplicaManagerInstance(CPUModel cpuModel, int id, Shard... shards);
 
 	public void receiveResults(long uid, long completionTime) {
 

@@ -16,18 +16,25 @@ public abstract class IndexReplica {
 	protected ShardServer[] servers;
 
 	protected Long2ObjectMap<LongList> times;
+	private int id;
 
-	public IndexReplica(QueryBroker broker, CPUModel cpuModel, Shard... shards) {
+	public IndexReplica(QueryBroker broker, CPUModel cpuModel, int id, Shard... shards) {
 		
 		this.broker = broker;
+		this.id = id;
 		servers = new ShardServer[shards.length];
 		for (int i = 0; i < shards.length; i++) {
 			servers[i] = newShardServerInstance(shards[i], cpuModel, i);
 		}
 		times = new Long2ObjectOpenHashMap<>();
-		
 	}
 	
+	public int getId() {
+		
+		return id;
+		
+	}
+
 	protected abstract ShardServer newShardServerInstance(Shard shard, CPUModel cpuModel, int id);
 	public abstract void receiveQuery(Query query);
 	

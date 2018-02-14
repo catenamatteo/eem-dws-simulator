@@ -17,9 +17,9 @@ public abstract class CPUModel {
 		this.powers = powers;		
 	}
 	
-	public CPU getNewInstance() {
+	public CPU getNewInstance(String id) {
 		
-		return new CPU(this);
+		return new CPU(this, id);
 		
 	}
 

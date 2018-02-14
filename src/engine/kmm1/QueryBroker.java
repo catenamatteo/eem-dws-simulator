@@ -12,8 +12,8 @@ public class QueryBroker extends engine.QueryBroker {
 	}
 
 	@Override
-	protected IndexReplica newReplicaManagerInstance(CPUModel cpuModel, Shard... shards) {
+	protected IndexReplica newReplicaManagerInstance(CPUModel cpuModel, int id, Shard... shards) {
 		
-		return new engine.kmm1.IndexReplica(this, cpuModel, shards);
+		return new engine.kmm1.IndexReplica(this, cpuModel, id, shards);
 	}
 }
