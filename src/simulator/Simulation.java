@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
-import cpu.CPUModel;
-import cpu.impl.Intel_i7_4770K;
+import cpu.CPUBuilder;
+import cpu.impl.Intel_i7_4770K_Builder;
 import engine.QueryBroker;
 import engine.Shard;
 import eu.nicecode.simulator.Event;
@@ -88,25 +88,25 @@ public class Simulation {
 
 		EemDwsSimulator simulator = new EemDwsSimulator();
 		
-		CPUModel model = new Intel_i7_4770K();
+		CPUBuilder cpuBuilder = new Intel_i7_4770K_Builder();
 
-		Shard shardB = new Shard("resources/cw09b.ef.pp", "resources/cw09b.ef.time", model.getFrequencies());
-		Shard shardA2 = new Shard("resources/cw09a2.ef.pp", "resources/cw09a2.ef.time", model.getFrequencies());
-		Shard shardA3 = new Shard("resources/cw09a3.ef.pp", "resources/cw09a3.ef.time", model.getFrequencies());
-		Shard shardA4 = new Shard("resources/cw09a4.ef.pp", "resources/cw09a4.ef.time", model.getFrequencies());
-		Shard shardA5 = new Shard("resources/cw09a4.ef.pp", "resources/cw09a5.ef.time", model.getFrequencies());
+		Shard shardB = new Shard("resources/cw09b.ef.pp", "resources/cw09b.ef.time", cpuBuilder.getFrequencies());
+		Shard shardA2 = new Shard("resources/cw09a2.ef.pp", "resources/cw09a2.ef.time", cpuBuilder.getFrequencies());
+		Shard shardA3 = new Shard("resources/cw09a3.ef.pp", "resources/cw09a3.ef.time", cpuBuilder.getFrequencies());
+		Shard shardA4 = new Shard("resources/cw09a4.ef.pp", "resources/cw09a4.ef.time", cpuBuilder.getFrequencies());
+		Shard shardA5 = new Shard("resources/cw09a4.ef.pp", "resources/cw09a5.ef.time", cpuBuilder.getFrequencies());
 		
 		QueryBroker broker = null;
 		switch (method.toLowerCase()) {
 		case "pesos":
-			broker = getPESOSQueryBroker(simulator, model, numOfReplicas, shardB, shardA2, shardA3, shardA4, shardA5);
+			broker = getPESOSQueryBroker(simulator, cpuBuilder, numOfReplicas, shardB, shardA2, shardA3, shardA4, shardA5);
 			break;
 		case "pegasus":
-			broker = getPEGASUSQueryBroker(simulator, model, numOfReplicas, shardB, shardA2, shardA3, shardA4, shardA5);
+			broker = getPEGASUSQueryBroker(simulator, cpuBuilder, numOfReplicas, shardB, shardA2, shardA3, shardA4, shardA5);
 			break;
 		case "perf":
 		default:
-			broker = getPERFQueryBroker(simulator, model, numOfReplicas, shardB, shardA2, shardA3, shardA4, shardA5);
+			broker = getPERFQueryBroker(simulator, cpuBuilder, numOfReplicas, shardB, shardA2, shardA3, shardA4, shardA5);
 			break;
 		}
 
@@ -127,23 +127,23 @@ public class Simulation {
 	}
 
 
-	private static QueryBroker getPERFQueryBroker(EemDwsSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
+	private static QueryBroker getPERFQueryBroker(EemDwsSimulator simulator, CPUBuilder builder, int numOfReplicas, Shard... shards) {
 
-		return new engine.mmk.QueryBroker(simulator, model, numOfReplicas, shards);
+		return new engine.kmm1.QueryBroker(simulator, builder, numOfReplicas, shards);
 
 	}
 
-	private static QueryBroker getPESOSQueryBroker(EemDwsSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
+	private static QueryBroker getPESOSQueryBroker(EemDwsSimulator simulator, CPUBuilder builder, int numOfReplicas, Shard... shards) {
 
 
-		return new engine.kmm1.pesos.QueryBroker(simulator, model, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
+		return new engine.kmm1.pesos.QueryBroker(simulator, builder, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
 				shards);
 
 	}
 
-	private static QueryBroker getPEGASUSQueryBroker(EemDwsSimulator simulator, CPUModel model, int numOfReplicas, Shard... shards) {
+	private static QueryBroker getPEGASUSQueryBroker(EemDwsSimulator simulator, CPUBuilder builder, int numOfReplicas, Shard... shards) {
 
-		return new engine.mmk.pegasus.QueryBroker(simulator, model, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
+		return new engine.mmk.pegasus.QueryBroker(simulator, builder, new Time(500, TimeUnit.MILLISECONDS), numOfReplicas,
 				shards);
 
 	}

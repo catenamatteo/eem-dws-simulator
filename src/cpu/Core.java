@@ -1,26 +1,30 @@
 package cpu;
 
-public class Core {
+public abstract class Core {
 
 	protected CPU cpu;
-	protected int currentFrequency;
-	private boolean busy;
+	protected boolean busy;
 
-	Core(CPU cpu) {
+	protected Core(CPU cpu) {
 
 		this.cpu = cpu;
-		this.currentFrequency = cpu.getCPUModel().getMinFrequency();
-		busy=false;
+		busy = false;
 	}
 	
-	public int getFrequency() {
-		
-		return currentFrequency;
-	}
+//	public int getCPUCurrentMaxFrequency() {
+//		
+//		return cpu.getCurrentMaxFrequency();
+//	}
+	
+	public abstract int getFrequency();
+//	public int getFrequency() {
+//		
+//		return currentFrequency;
+//	}
 	
 	public void setMaxFrequency(long timeMicroseconds) {
 
-		setFrequency(cpu.getCPUModel().getMaxFrequency(), timeMicroseconds);
+		setFrequency(cpu.getMaxFrequency(), timeMicroseconds);
 	}
 
 	public void busy(long timeMicroseconds) {
@@ -47,27 +51,28 @@ public class Core {
 
 	public void setMinFrequency(long timeMicroseconds) {
 
-		setFrequency(cpu.getCPUModel().getMinFrequency(), timeMicroseconds);
+		setFrequency(cpu.getMinFrequency(), timeMicroseconds);
 	}
 
-	public void setFrequency(int frequency, long timeMicroseconds) {
-
-		int prevFrequency = currentFrequency;
-		
-		if (cpu.getCPUModel().hasFrequency(frequency)) {
-			
-			currentFrequency = frequency;
-						
-		} else {
-			
-			currentFrequency = cpu.getCPUModel().getMaxFrequency();
-			
-		}
-		
-		if (prevFrequency != currentFrequency)
-			cpu.update(timeMicroseconds);
-		
-	}
+	public abstract void setFrequency(int frequency, long timeMicroseconds);
+//	public void setFrequency(int frequency, long timeMicroseconds) {
+//
+//		int prevFrequency = currentFrequency;
+//		
+//		if (cpu.hasFrequency(frequency)) {
+//			
+//			currentFrequency = frequency;
+//						
+//		} else {
+//			
+//			currentFrequency = cpu.getMaxFrequency();
+//			
+//		}
+//		
+//		if (prevFrequency != currentFrequency)
+//			cpu.update(timeMicroseconds);
+//		
+//	}
 
 	public CPU getCpu() {
 		

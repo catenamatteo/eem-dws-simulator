@@ -1,7 +1,7 @@
 package engine;
 
 import cpu.CPU;
-import cpu.CPUModel;
+import cpu.CPUBuilder;
 import cpu.Core;
 import eu.nicecode.simulator.Simulator;
 
@@ -13,14 +13,14 @@ public abstract class ShardServer {
 	protected CPU cpu;
 	protected int id;
 	
-	public ShardServer(IndexReplica replicaManager, Shard shard, CPUModel cpuModel, int id) {
+	public ShardServer(IndexReplica replicaManager, Shard shard, CPUBuilder cpuBuilder, int id) {
 
 		this.shard = shard;
 		this.replicaManager = replicaManager;
 		
-		this.cpu = cpuModel.getNewInstance(replicaManager.getId()+":"+id);
-		matcher = new QueryMatcher[cpuModel.getNumCores()];
-		for (int i = 0; i < cpuModel.getNumCores(); i++)
+		this.cpu = cpuBuilder.newInstance(replicaManager.getId()+":"+id);
+		matcher = new QueryMatcher[cpu.getNumCores()];
+		for (int i = 0; i < cpu.getNumCores(); i++)
 			matcher[i] = newQueryMatcherInstance(cpu.getCore(i));
 		this.id = id;
 	}

@@ -1,6 +1,6 @@
 package engine.kmm1;
 
-import cpu.CPUModel;
+import cpu.CPUBuilder;
 import engine.QueryBroker;
 import engine.Shard;
 import engine.ShardServer;
@@ -8,15 +8,15 @@ import query.Query;
 
 public class IndexReplica extends engine.IndexReplica {
 
-	public IndexReplica(QueryBroker broker, CPUModel cpuModel, int id, Shard[] shards) {
-		super(broker, cpuModel, id, shards);
+	public IndexReplica(QueryBroker broker, CPUBuilder cpuBuilder, int id, Shard[] shards) {
+		super(broker, cpuBuilder, id, shards);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	protected ShardServer newShardServerInstance(Shard shard, CPUModel cpuModel, int id) {
+	protected ShardServer newShardServerInstance(Shard shard, CPUBuilder cpuBuilder, int id) {
 		
-		return new engine.kmm1.ShardServer(this, shard, cpuModel, id);
+		return new engine.kmm1.ShardServer(this, shard, cpuBuilder, id);
 	}
 
 	public void receiveQuery(Query query) {

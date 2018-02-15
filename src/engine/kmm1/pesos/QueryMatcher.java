@@ -109,13 +109,13 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 	
 		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
 		
-		for (int frequency : core.getCpu().getCPUModel().getFrequencies()) {
+		for (int frequency : core.getCpu().getFrequencies()) {
 			
 			//double time = getShardServer().getShard().getServiceTime(query.getQid(), frequency).getTimeMicroseconds();
 			double time = qep.regress(numOfTerms, postings, frequency);
 			if (time <= targetTime) return frequency;
 		}		
-		return core.getCpu().getCPUModel().getMaxFrequency();
+		return core.getCpu().getMaxFrequency();
 	}
 
 	protected double getLateness(long now) {
@@ -167,13 +167,13 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 		//return getShardServer().getShard().getServiceTime(query.getQid(), core.getCpu().getCPUModel().getMaxFrequency()).getTimeMicroseconds();
 		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
 		
-		int max = core.getCpu().getCPUModel().getMaxFrequency();
+		int max = core.getCpu().getMaxFrequency();
 		return qep.regress(numOfTerms, postings, max); 
 	}
 
 	protected Query dequeueQuery() {
 		
-		Query rtn = (Query) queue.poll();
+		Query rtn = super.dequeueQuery();
 		runFrequencyScheduler(server.getSimulator().now().getTimeMicroseconds());
 		return rtn;
 	}

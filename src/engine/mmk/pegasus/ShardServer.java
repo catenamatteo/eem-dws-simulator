@@ -1,12 +1,12 @@
 package engine.mmk.pegasus;
 
-import cpu.CPUModel;
+import cpu.CPUBuilder;
 import engine.IndexReplica;
 import engine.Shard;
 
 public class ShardServer extends engine.mmk.ShardServer {
 
-	public ShardServer(IndexReplica replicaManager, Shard shard, CPUModel cpuModel, int id) {
+	public ShardServer(IndexReplica replicaManager, Shard shard, CPUBuilder cpuModel, int id) {
 		super(replicaManager, shard, cpuModel, id);
 		// TODO Auto-generated constructor stub
 	}

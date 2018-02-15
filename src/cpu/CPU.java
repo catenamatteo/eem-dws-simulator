@@ -1,6 +1,8 @@
 package cpu;
 
-public class CPU {
+import java.util.Arrays;
+
+public abstract class CPU {
 
 	/*
 	 * TODO:
@@ -8,116 +10,155 @@ public class CPU {
 	 * but in a dedicated class or subclass
 	 */
 	
-	protected CPUModel cpuModel;
+	protected int numCores;
+	protected int[] frequencies;
+	protected double[] powerCaps;	
+
 	protected Core[] cores;
 
-	protected String status;
 	protected long statusChangeTime;
 	protected int activeCores;
 	protected int currentMaxFrequency;
-
-	protected double mpp_at_cmf; //maximum possible power at the current maximum frequency, i.e., if all the cores were active at the current max freq
 	
-	private StringBuilder sb;
+	protected StringBuilder sb;	
+	protected String id;
 	
-	private String id;
+	protected CPU(String id, int numCores, int[] frequencies, double[] powerCaps) {
 
-	CPU(CPUModel cpuModel, String id) {
-
-		this.cpuModel = cpuModel;
-		this.statusChangeTime = 0;
-		int minFreq = cpuModel.getMinFrequency();
-		this.status = "idle";
-		this.mpp_at_cmf = cpuModel.getPower(minFreq);
-		this.activeCores = 0;
-		this.currentMaxFrequency = minFreq;
+		this.numCores = numCores;
+		this.frequencies = frequencies;
+		this.powerCaps = powerCaps;
 		
-		this.cores = new Core[cpuModel.numCores];
-		for (int i = 0; i < cpuModel.numCores; i++) 
-			cores[i] = new Core(this);
+		
+		this.statusChangeTime = 0;
+		this.currentMaxFrequency = frequencies[0];
+		this.activeCores = 0;
+		
+		this.cores = new Core[numCores];
+		for (int i = 0; i < numCores; i++) 
+			cores[i] = getNewCoreInstance(this);
 		
 		this.sb = new StringBuilder();
 		
 		this.id = id;
 	}
 
-	void update(long timeMicroseconds) {
-		
-		sb.setLength(0);
-		//get number of active cores and current max frequency
-		int activeCores = 0;
-		int currentMaxFrequency = cpuModel.getMinFrequency();
-		for (Core c : cores) {
-			
-			currentMaxFrequency = Math.max(currentMaxFrequency, c.getFrequency());
-			if (c.isBusy()) {				
-				activeCores++;
-				sb.append(c.getFrequency());
-				sb.append(" ");
-			}
-		}
-		
-		if (activeCores == 0)
-			sb.append("idle");
-		else
-			sb.setLength(sb.length()-1); //remove one extra white char
-		
-		String newStatus = sb.toString();
-		
-		sb.setLength(0);
-		sb.append("[cpu@");
-		sb.append(id);
-		sb.append("] ");
-		sb.append(status);
-		sb.append(" ");
-		sb.append(statusChangeTime);
-		sb.append(" ");
-		sb.append(timeMicroseconds);
-		if (statusChangeTime != timeMicroseconds) System.out.println(sb.toString());
-		
-		//new status
-		this.status = newStatus;
-		this.statusChangeTime = timeMicroseconds;
-		this.activeCores = activeCores;
-		this.currentMaxFrequency = currentMaxFrequency;
-		this.mpp_at_cmf = cpuModel.getPower(currentMaxFrequency);
-	}
+	protected abstract Core getNewCoreInstance(CPU cpu);
 
-	public CPUModel getCPUModel() {
-		
-		return cpuModel;
-	}
+	protected abstract void update(long timeMicroseconds);
+	
+//	void update(long timeMicroseconds) {
+//		
+//		sb.setLength(0);
+//		//get number of active cores and current max frequency
+//		int activeCores = 0;
+//		int currentMaxFrequency = frequencies[0];
+//		for (Core c : cores) {
+//			
+//			currentMaxFrequency = Math.max(currentMaxFrequency, c.getFrequency());
+//			if (c.isBusy()) {				
+//				activeCores++;
+//				sb.append(c.getFrequency());
+//				sb.append(" ");
+//			}
+//		}
+//		
+//		if (activeCores == 0)
+//			sb.append("idle");
+//		else
+//			sb.setLength(sb.length()-1); //remove one extra white char
+//		
+//		String newStatus = sb.toString();
+//		
+//		sb.setLength(0);
+//		sb.append("[cpu@");
+//		sb.append(id);
+//		sb.append("] ");
+//		sb.append(status);
+//		sb.append(" ");
+//		sb.append(statusChangeTime);
+//		sb.append(" ");
+//		sb.append(timeMicroseconds);
+//		if (statusChangeTime != timeMicroseconds) System.out.println(sb.toString());
+//		
+//		//new status
+//		this.status = newStatus;
+//		this.statusChangeTime = timeMicroseconds;
+//		this.activeCores = activeCores;
+//		this.currentMaxFrequency = currentMaxFrequency;
+//		this.currentPowerCap = powerCaps[Arrays.binarySearch(frequencies, currentMaxFrequency)];
+//	}
 
 	public Core getCore(int i) {
 
 		return cores[i];
 	}
 
-	private void setFrequency(int frequency, long timeMicroseconds) {
-		
-		
-		for (Core c : cores) {
-			
-			c.currentFrequency = frequency;
-		}
-		update(timeMicroseconds);
-	}
+	protected abstract void setFrequency(int frequency, long timeMicroseconds);
+//	private void setFrequency(int frequency, long timeMicroseconds) {
+//				
+//		for (Core c : cores) {
+//			
+//			c.currentFrequency = frequency;
+//		}
+//		update(timeMicroseconds);
+//	}
 	
 	public void setMaxPower(long timeMicroseconds) {
 
-		setFrequency(cpuModel.getMaxFrequency(), timeMicroseconds);
+		setFrequency(frequencies[frequencies.length-1], timeMicroseconds);
 	}
 
-	public void changePower(double d, long timeMicroseconds) {
+	public void changePower(double powerCap, long timeMicroseconds) {
 
-		int frequency = cpuModel.getFrequency(mpp_at_cmf * d);
-		setFrequency(frequency, timeMicroseconds);
+	
+		setFrequency(getFrequency(powerCap), timeMicroseconds);
 	}
 
-	public void shutdown(long timeMicroseconds) {
+	public abstract void shutdown(long timeMicroseconds);
+//	public void shutdown(long timeMicroseconds) {
+//
+//		//it basically forces a last print of the stats
+//		update(timeMicroseconds);
+//		
+//	}
 
-		//it basically forces a last print of the stats
-		update(timeMicroseconds);
+	public int getMinFrequency() {
 		
+		return frequencies[0];
+	}
+
+	public int getMaxFrequency() {
+		
+		return frequencies[frequencies.length-1];
+	}
+
+	public int getNumCores() {
+		
+		return numCores;
+	}
+
+	public int[] getFrequencies() {
+		
+		return frequencies;
+	}
+
+	public int getFrequency(double powerCap) {
+
+		int idx = Arrays.binarySearch(powerCaps, powerCap);
+		if (idx < 0) idx = Math.max(0, - idx - 2);
+	
+		return frequencies[idx];
+	}
+
+	public double getPowerCap(int frequency) {
+		
+		int idx = Arrays.binarySearch(frequencies, frequency);
+		return powerCaps[idx];		
+	}
+
+	public boolean hasFrequency(int frequency) {
+		
+		return Arrays.binarySearch(frequencies, frequency) >= 0;
 	}
 }

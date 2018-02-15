@@ -3,7 +3,7 @@ package engine.mmk;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import cpu.CPUModel;
+import cpu.CPUBuilder;
 import engine.QueryBroker;
 import engine.Shard;
 import engine.ShardServer;
@@ -14,8 +14,8 @@ public class IndexReplica extends engine.IndexReplica {
 	protected Queue<Query>[] queues;
 	
 	@SuppressWarnings("unchecked")
-	public IndexReplica(QueryBroker broker, CPUModel cpuModel, int id, Shard[] shards) {
-		super(broker, cpuModel, id, shards);
+	public IndexReplica(QueryBroker broker, CPUBuilder cpuBuilder, int id, Shard[] shards) {
+		super(broker, cpuBuilder, id, shards);
 		queues = new Queue[shards.length];
 		for (int i = 0; i < shards.length; i++) {
 			queues[i] = new LinkedList<>();
@@ -23,9 +23,9 @@ public class IndexReplica extends engine.IndexReplica {
 	}
 
 	@Override
-	protected ShardServer newShardServerInstance(Shard shard, CPUModel cpuModel, int id) {
+	protected ShardServer newShardServerInstance(Shard shard, CPUBuilder cpuBuilder, int id) {
 		
-		return new engine.mmk.ShardServer(this, shard, cpuModel, id);
+		return new engine.mmk.ShardServer(this, shard, cpuBuilder, id);
 	}
 	
 	public Query getNextQuery(int shardServerId) {

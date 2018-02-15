@@ -2,7 +2,7 @@ package engine;
 
 import java.util.Collections;
 
-import cpu.CPUModel;
+import cpu.CPUBuilder;
 import eu.nicecode.simulator.Simulator;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -18,7 +18,7 @@ public abstract class IndexReplica {
 	protected Long2ObjectMap<LongList> times;
 	private int id;
 
-	public IndexReplica(QueryBroker broker, CPUModel cpuModel, int id, Shard... shards) {
+	public IndexReplica(QueryBroker broker, CPUBuilder cpuModel, int id, Shard... shards) {
 		
 		this.broker = broker;
 		this.id = id;
@@ -35,7 +35,7 @@ public abstract class IndexReplica {
 		
 	}
 
-	protected abstract ShardServer newShardServerInstance(Shard shard, CPUModel cpuModel, int id);
+	protected abstract ShardServer newShardServerInstance(Shard shard, CPUBuilder cpuBuilder, int id);
 	public abstract void receiveQuery(Query query);
 	
 	public void receiveResults(long uid, long completionTime) {

@@ -1,8 +1,10 @@
 package engine.mmk.pegasus;
 
 import java.util.concurrent.TimeUnit;
+
 import com.google.common.math.Quantiles;
-import cpu.CPUModel;
+
+import cpu.CPUBuilder;
 import engine.IndexReplica;
 import engine.Shard;
 import eu.nicecode.simulator.Simulator;
@@ -20,8 +22,8 @@ public class QueryBroker extends engine.mmk.QueryBroker {
 	protected Time waitUntil;
 	
 	
-	public QueryBroker(Simulator simulator, CPUModel cpuModel, Time slo, int numOfReplicas, Shard[] shards) {
-		super(simulator, cpuModel, numOfReplicas, shards);
+	public QueryBroker(Simulator simulator, CPUBuilder cpuBuilder, Time slo, int numOfReplicas, Shard[] shards) {
+		super(simulator, cpuBuilder, numOfReplicas, shards);
 		mv95thtileKeys = new LongArrayList();
 		mv95thtileValues = new LongArrayList();
 		mv95thtileWindow = TimeUnit.SECONDS.toMicros(30);
@@ -114,8 +116,8 @@ public class QueryBroker extends engine.mmk.QueryBroker {
 	}
 	
 	@Override
-	protected IndexReplica newReplicaManagerInstance(CPUModel cpuModel, int id, Shard... shards) {
+	protected IndexReplica newReplicaManagerInstance(CPUBuilder cpuBuilder, int id, Shard... shards) {
 		
-		return new engine.mmk.pegasus.IndexReplica(this, cpuModel, id, shards);
+		return new engine.mmk.pegasus.IndexReplica(this, cpuBuilder, id, shards);
 	}
 }

@@ -3,7 +3,7 @@ package engine;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-import cpu.CPUModel;
+import cpu.CPUBuilder;
 import eu.nicecode.queueing.Request;
 import eu.nicecode.simulator.Agent;
 import eu.nicecode.simulator.Simulator;
@@ -19,13 +19,13 @@ public abstract class QueryBroker implements Agent {
 	protected Long2LongMap arrivalTimes;
 	protected Simulator simulator;
 	
-	public QueryBroker(Simulator simulator, CPUModel cpuModel, int numOfReplicas, Shard... shards) {
+	public QueryBroker(Simulator simulator, CPUBuilder cpuBuilder, int numOfReplicas, Shard... shards) {
 
 		this.simulator = simulator;
 		this.arrivalTimes = new Long2LongOpenHashMap();
 		replicas = new IndexReplica[numOfReplicas];
 		for (int i = 0; i < numOfReplicas; i++)
-			replicas[i] = newReplicaManagerInstance(cpuModel, i, shards);
+			replicas[i] = newReplicaManagerInstance(cpuBuilder, i, shards);
 			
 		
 	}
@@ -84,12 +84,12 @@ public abstract class QueryBroker implements Agent {
 
 	}
 	
-	protected abstract IndexReplica newReplicaManagerInstance(CPUModel cpuModel, int id, Shard... shards);
+	protected abstract IndexReplica newReplicaManagerInstance(CPUBuilder cpu, int id, Shard... shards);
 
 	public void receiveResults(long uid, long completionTime) {
 
 		long arrivalTime = arrivalTimes.remove(uid); //get and remove;
-		System.out.printf("[broker]\t%d\t%.3f\n", TimeUnit.MICROSECONDS.toSeconds(arrivalTime), completionTime/1e3);
+		System.out.printf("[broker] %d %.3f\n", TimeUnit.MICROSECONDS.toSeconds(arrivalTime), completionTime/1e3);
 	}
 
 	public Simulator getSimulator() {
