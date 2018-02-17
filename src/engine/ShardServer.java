@@ -18,7 +18,7 @@ public abstract class ShardServer {
 		this.shard = shard;
 		this.replicaManager = replicaManager;
 		
-		this.cpu = cpuBuilder.newInstance(replicaManager.getId()+":"+id);
+		this.cpu = cpuBuilder.newInstance(this);
 		matcher = new QueryMatcher[cpu.getNumCores()];
 		for (int i = 0; i < cpu.getNumCores(); i++)
 			matcher[i] = newQueryMatcherInstance(cpu.getCore(i));
@@ -42,7 +42,7 @@ public abstract class ShardServer {
 		return replicaManager.getSimulator();
 	}
 
-	public IndexReplica getReplicaManager() {
+	public IndexReplica getIndexReplica() {
 		
 		return replicaManager;
 	}

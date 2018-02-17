@@ -2,80 +2,15 @@ package simulator;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import cpu.CPUBuilder;
 import cpu.impl.Intel_i7_4770K_Builder;
 import engine.QueryBroker;
 import engine.Shard;
-import eu.nicecode.simulator.Event;
 import eu.nicecode.simulator.Simulator;
 import eu.nicecode.simulator.Time;
-import eu.nicecode.simulator.exception.TimeException;
 import query.MSNQuerySource;
-import util.Clock;
-
-class EemDwsSimulator extends Simulator {
-
-	private MSNQuerySource source;
-	private QueryBroker broker;
-	private int nonClockCnt; //TODO: is this still used?
-
-	public void setQuerySource(MSNQuerySource source) {
-
-		this.source = source;
-	}
-
-	@Override
-	public boolean isDone() {
-
-		return source.isDone() && nonClockCnt <= 0;
-	}
-	
-	public void doAllEvents() {
-		
-		try  {
-			
-			while (true) {
-				
-				Event e = events.dequeue();
-				
-				if (time.compareTo(e.getTime()) <= 0)	{
-					
-					time.setTime(e.getTime());
-					
-				} else {
-					
-					throw new TimeException("You can't go back in time!");
-					
-				}
-				
-				e.execute(this);
-				
-				if (!(e instanceof Clock)) nonClockCnt--;
-			}
-			
-		} catch (NoSuchElementException nsee)  {
-		
-			//end
-		}
-		
-		broker.shutdown(now().getTimeMicroseconds());
-	}
-
-	
-	public void schedule(Event e) {
-		
-		if (!(e instanceof Clock)) nonClockCnt++;
-		events.enqueue(e);
-	}
-
-	public void setBroker(QueryBroker broker) {
-
-		this.broker = broker;
-	}
-}
 
 public class Simulation {
 	
@@ -85,8 +20,9 @@ public class Simulation {
 		String method = args[0];		
 		String queryFilePath = args[1];
 		int numOfReplicas = Integer.parseInt(args[2]);
+		String outputFilePath = args[3];
 
-		EemDwsSimulator simulator = new EemDwsSimulator();
+		EemDwsSimulator simulator = new EemDwsSimulator(outputFilePath);
 		
 		CPUBuilder cpuBuilder = new Intel_i7_4770K_Builder();
 

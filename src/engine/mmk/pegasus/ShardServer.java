@@ -1,6 +1,7 @@
 package engine.mmk.pegasus;
 
 import cpu.CPUBuilder;
+import cpu.RAPL;
 import engine.IndexReplica;
 import engine.Shard;
 
@@ -11,14 +12,14 @@ public class ShardServer extends engine.mmk.ShardServer {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void setMaxCPUPower(long timeMicroseconds) {
+	public void setMaxCPUPowerCap(long timeMicroseconds) {
 
-		cpu.setMaxPower(timeMicroseconds);
+		((RAPL)cpu).setMaxPowerCap(timeMicroseconds);
 	}
 
-	public void changeCPUPower(double d, long timeMicroseconds) {
+	public void multiplyCPUPowerCapBy(double d, long timeMicroseconds) {
 
-		cpu.changePower(d, timeMicroseconds);
+		((RAPL)cpu).setPowerCap(d * ((RAPL)cpu).getPowerCap(), timeMicroseconds);
 	}
 
 }

@@ -17,7 +17,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 
 	public QueryMatcher(ShardServer shardServer, Core core) {
 		super(shardServer, core);
-		core.setMinFrequency(server.getReplicaManager().getBroker().getSimulator().now().getTimeMicroseconds());
+		core.setMinFrequency(server.getIndexReplica().getBroker().getSimulator().now().getTimeMicroseconds());
 	}
 	
 	@Override
@@ -55,7 +55,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 
 	private void runFrequencyScheduler(long now) {
 		
-		Time timeBudget = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getTimeBudget();
+		Time timeBudget = ((engine.kmm1.pesos.QueryBroker)server.getIndexReplica().getBroker()).getTimeBudget();
 		
 		long volume = 0;
 		double maxDensity = 0;
@@ -107,7 +107,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 	
 	private int identifyTargetFrequency(int numOfTerms, int postings, double targetTime) {
 	
-		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
+		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.QueryBroker)server.getIndexReplica().getBroker()).getQueryEfficiencyPredictors();
 		
 		for (int frequency : core.getCpu().getFrequencies()) {
 			
@@ -120,7 +120,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 
 	protected double getLateness(long now) {
 
-		Time timeBudget = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getTimeBudget();
+		Time timeBudget = ((engine.kmm1.pesos.QueryBroker)server.getIndexReplica().getBroker()).getTimeBudget();
 		
 		double lateness = 0;
 		int cnt = 0;
@@ -165,7 +165,7 @@ public class QueryMatcher extends engine.kmm1.QueryMatcher {
 	private double predictServiceTimeAtMaxFreq(int numOfTerms, int postings) {
 		
 		//return getShardServer().getShard().getServiceTime(query.getQid(), core.getCpu().getCPUModel().getMaxFrequency()).getTimeMicroseconds();
-		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.QueryBroker)server.getReplicaManager().getBroker()).getQueryEfficiencyPredictors();
+		QueryEfficiencyPredictors qep = ((engine.kmm1.pesos.QueryBroker)server.getIndexReplica().getBroker()).getQueryEfficiencyPredictors();
 		
 		int max = core.getCpu().getMaxFrequency();
 		return qep.regress(numOfTerms, postings, max); 

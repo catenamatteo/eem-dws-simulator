@@ -18,7 +18,7 @@ public abstract class QueryMatcher implements Agent {
 		
 		this.server = shardServer;
 		this.core = core;
-		core.setMaxFrequency(server.getReplicaManager().getBroker().getSimulator().now().getTimeMicroseconds());
+		core.setMaxFrequency(server.getIndexReplica().getBroker().getSimulator().now().getTimeMicroseconds());
 		
 	}
 

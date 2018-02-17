@@ -19,19 +19,9 @@ public class Intel_i7_4770K_Core extends Core {
 	
 	public void setFrequency(int frequency, long timeMicroseconds) {
 
-		int prevFrequency = currentFrequency;
-		
-		if (cpu.hasFrequency(frequency)) {
-			
-			currentFrequency = frequency;
-						
-		} else {
-			
-			currentFrequency = cpu.getMaxFrequency();
-			
-		}
-		
-		if (prevFrequency != currentFrequency)
+		int previousFrequency = currentFrequency;
+		currentFrequency = frequency;		
+		if (currentFrequency != previousFrequency) 
 			((Intel_i7_4770K)cpu).update(timeMicroseconds);
 		
 	}

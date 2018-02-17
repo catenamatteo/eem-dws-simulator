@@ -76,16 +76,16 @@ public class QueryBroker extends engine.mmk.QueryBroker {
 				waitUntil = new Time(simulator.now().getTimeMicroseconds() + TimeUnit.MINUTES.toMicros(1),
 						TimeUnit.MICROSECONDS);
 				
-				setMaxCPUPower();
+				setMaxCPUPowerCap();
 				
 
 			} else if (completionTime > 1.35 * slo.getTimeMicroseconds()) {
 				
-				setMaxCPUPower();
+				setMaxCPUPowerCap();
 				
 			} else if (completionTime > slo.getTimeMicroseconds()) {
 				
-				changeCPUPower(1.07);
+				multiplyCPUPowerBy(1.07);
 				
 			} else if (completionTime <= slo.getTimeMicroseconds() && completionTime >= 0.85 * slo.getTimeMicroseconds()) {
 				
@@ -93,26 +93,26 @@ public class QueryBroker extends engine.mmk.QueryBroker {
 				
 			} else if (completionTime < 0.85 * slo.getTimeMicroseconds()) {
 				
-				changeCPUPower(0.99);
+				multiplyCPUPowerBy(0.99);
 				
 			} else if (completionTime < 0.60 * slo.getTimeMicroseconds()) {
 				
-				changeCPUPower(0.97);
+				multiplyCPUPowerBy(0.97);
 			}
 		}
 
 		super.receiveResults(uid, completionTime);
 	}
 
-	private void changeCPUPower(double d) {
+	private void multiplyCPUPowerBy(double d) {
 		
 		for (IndexReplica r : replicas) 
-			((engine.mmk.pegasus.IndexReplica)r).changeCPUPower(d, simulator.now().getTimeMicroseconds());		
+			((engine.mmk.pegasus.IndexReplica)r).multiplyCPUPowerCapBy(d, simulator.now().getTimeMicroseconds());		
 	}
 
-	protected void setMaxCPUPower() {
+	protected void setMaxCPUPowerCap() {
 		for (IndexReplica r : replicas) 
-			((engine.mmk.pegasus.IndexReplica)r).setMaxCPUPower(simulator.now().getTimeMicroseconds());
+			((engine.mmk.pegasus.IndexReplica)r).setMaxCPUPowerCap(simulator.now().getTimeMicroseconds());
 	}
 	
 	@Override

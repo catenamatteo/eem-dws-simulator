@@ -11,10 +11,10 @@ public class IndexReplica extends engine.mmk.IndexReplica {
 		super(broker, cpuBuilder, id, shards);
 	}
 
-	public void setMaxCPUPower(long timeMicroseconds) {
+	public void setMaxCPUPowerCap(long timeMicroseconds) {
 
 		for (ShardServer s : servers)
-			((engine.mmk.pegasus.ShardServer)s).setMaxCPUPower(timeMicroseconds);
+			((engine.mmk.pegasus.ShardServer)s).setMaxCPUPowerCap(timeMicroseconds);
 		
 	}
 	
@@ -25,10 +25,10 @@ public class IndexReplica extends engine.mmk.IndexReplica {
 		return new engine.mmk.pegasus.ShardServer(this, shard, cpuBuilder, id);
 	}
 
-	public void changeCPUPower(double d, long timeMicroseconds) {
+	public void multiplyCPUPowerCapBy(double d, long timeMicroseconds) {
 		
 		for (ShardServer s : servers)
-			((engine.mmk.pegasus.ShardServer)s).changeCPUPower(d, timeMicroseconds);		
+			((engine.mmk.pegasus.ShardServer)s).multiplyCPUPowerCapBy(d, timeMicroseconds);		
 	}
 
 }

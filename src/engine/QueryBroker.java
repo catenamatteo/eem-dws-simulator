@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import query.Query;
+import simulator.EemDwsSimulator;
 
 public abstract class QueryBroker implements Agent {
 	
@@ -89,7 +90,8 @@ public abstract class QueryBroker implements Agent {
 	public void receiveResults(long uid, long completionTime) {
 
 		long arrivalTime = arrivalTimes.remove(uid); //get and remove;
-		System.out.printf("[broker] %d %.3f\n", TimeUnit.MICROSECONDS.toSeconds(arrivalTime), completionTime/1e3);
+		String out = String.format("[broker] %d %.3f", TimeUnit.MICROSECONDS.toSeconds(arrivalTime), completionTime/1e3);
+		((EemDwsSimulator) simulator).println(out);
 	}
 
 	public Simulator getSimulator() {

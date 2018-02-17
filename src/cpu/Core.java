@@ -11,21 +11,8 @@ public abstract class Core {
 		busy = false;
 	}
 	
-//	public int getCPUCurrentMaxFrequency() {
-//		
-//		return cpu.getCurrentMaxFrequency();
-//	}
-	
 	public abstract int getFrequency();
-//	public int getFrequency() {
-//		
-//		return currentFrequency;
-//	}
 	
-	public void setMaxFrequency(long timeMicroseconds) {
-
-		setFrequency(cpu.getMaxFrequency(), timeMicroseconds);
-	}
 
 	public void busy(long timeMicroseconds) {
 
@@ -49,30 +36,17 @@ public abstract class Core {
 		return busy;
 	}
 
+	public void setMaxFrequency(long timeMicroseconds) {
+		
+		setFrequency(cpu.getMaxFrequency(), timeMicroseconds);
+	}
+
 	public void setMinFrequency(long timeMicroseconds) {
 
 		setFrequency(cpu.getMinFrequency(), timeMicroseconds);
 	}
 
 	public abstract void setFrequency(int frequency, long timeMicroseconds);
-//	public void setFrequency(int frequency, long timeMicroseconds) {
-//
-//		int prevFrequency = currentFrequency;
-//		
-//		if (cpu.hasFrequency(frequency)) {
-//			
-//			currentFrequency = frequency;
-//						
-//		} else {
-//			
-//			currentFrequency = cpu.getMaxFrequency();
-//			
-//		}
-//		
-//		if (prevFrequency != currentFrequency)
-//			cpu.update(timeMicroseconds);
-//		
-//	}
 
 	public CPU getCpu() {
 		

@@ -1,46 +1,31 @@
 package cpu;
 
-import java.util.Arrays;
+import engine.ShardServer;
 
 public abstract class CPU {
 
-	/*
-	 * TODO:
-	 * some of these fields and methods are very PEGASUS specific and maybe shouldn't be here 
-	 * but in a dedicated class or subclass
-	 */
 	
 	protected int numCores;
+		
 	protected int[] frequencies;
-	protected double[] powerCaps;	
 
 	protected Core[] cores;
 
 	protected long statusChangeTime;
-	protected int activeCores;
-	protected int currentMaxFrequency;
 	
-	protected StringBuilder sb;	
-	protected String id;
+	protected ShardServer server;
 	
-	protected CPU(String id, int numCores, int[] frequencies, double[] powerCaps) {
+	protected CPU(ShardServer server, int numCores) {
 
 		this.numCores = numCores;
-		this.frequencies = frequencies;
-		this.powerCaps = powerCaps;
-		
 		
 		this.statusChangeTime = 0;
-		this.currentMaxFrequency = frequencies[0];
-		this.activeCores = 0;
 		
 		this.cores = new Core[numCores];
 		for (int i = 0; i < numCores; i++) 
 			cores[i] = getNewCoreInstance(this);
-		
-		this.sb = new StringBuilder();
-		
-		this.id = id;
+				
+		this.server = server;
 	}
 
 	protected abstract Core getNewCoreInstance(CPU cpu);
@@ -94,71 +79,31 @@ public abstract class CPU {
 		return cores[i];
 	}
 
-	protected abstract void setFrequency(int frequency, long timeMicroseconds);
-//	private void setFrequency(int frequency, long timeMicroseconds) {
-//				
-//		for (Core c : cores) {
-//			
-//			c.currentFrequency = frequency;
-//		}
-//		update(timeMicroseconds);
-//	}
-	
-	public void setMaxPower(long timeMicroseconds) {
-
-		setFrequency(frequencies[frequencies.length-1], timeMicroseconds);
-	}
-
-	public void changePower(double powerCap, long timeMicroseconds) {
-
-	
-		setFrequency(getFrequency(powerCap), timeMicroseconds);
-	}
-
 	public abstract void shutdown(long timeMicroseconds);
-//	public void shutdown(long timeMicroseconds) {
-//
-//		//it basically forces a last print of the stats
-//		update(timeMicroseconds);
-//		
-//	}
 
-	public int getMinFrequency() {
-		
-		return frequencies[0];
-	}
+	public abstract int getMinFrequency();
 
-	public int getMaxFrequency() {
-		
-		return frequencies[frequencies.length-1];
-	}
+	public abstract int getMaxFrequency();
 
+	public abstract int[] getFrequencies();
+	
 	public int getNumCores() {
 		
 		return numCores;
 	}
-
-	public int[] getFrequencies() {
-		
-		return frequencies;
-	}
-
-	public int getFrequency(double powerCap) {
-
-		int idx = Arrays.binarySearch(powerCaps, powerCap);
-		if (idx < 0) idx = Math.max(0, - idx - 2);
 	
-		return frequencies[idx];
+	protected int activeCores() {
+
+		int activeCores = 0;
+		for (Core c : cores) {
+			
+			if (c.isBusy()) {				
+				activeCores++;
+			}
+		}
+		
+		return activeCores;
 	}
 
-	public double getPowerCap(int frequency) {
-		
-		int idx = Arrays.binarySearch(frequencies, frequency);
-		return powerCaps[idx];		
-	}
 
-	public boolean hasFrequency(int frequency) {
-		
-		return Arrays.binarySearch(frequencies, frequency) >= 0;
-	}
 }
