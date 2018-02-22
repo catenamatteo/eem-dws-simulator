@@ -20,9 +20,10 @@ public class Simulation {
 		String method = args[0];		
 		String queryFilePath = args[1];
 		int numOfReplicas = Integer.parseInt(args[2]);
-		String outputFilePath = args[3];
+		int simulationDurationInHours = Integer.parseInt(args[3]);
+		String outputFilePath = args[4];
 
-		EemDwsSimulator simulator = new EemDwsSimulator(outputFilePath);
+		EemDwsSimulator simulator = new EemDwsSimulator(outputFilePath, simulationDurationInHours);
 		
 		CPUBuilder cpuBuilder = new Intel_i7_4770K_Builder();
 

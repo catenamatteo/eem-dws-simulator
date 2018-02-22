@@ -8,13 +8,17 @@ import cpu.RAPL;
 import engine.ShardServer;
 import it.unimi.dsi.fastutil.doubles.Double2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.doubles.Double2IntSortedMap;
+import it.unimi.dsi.fastutil.ints.Int2DoubleArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import simulator.EemDwsSimulator;
 
 public class Intel_i7_4770K extends CPU implements RAPL {
 
 	static final Double2IntSortedMap[] powerCap2frequency;
+	static final Int2DoubleMap[] frequency2powerCap;
 	static final int[] frequencies;
 	static final int NUMCORES = 4;
+	static final double IDLE_POWER = 0.8;
 
 	static {
 
@@ -84,6 +88,22 @@ public class Intel_i7_4770K extends CPU implements RAPL {
 
 		frequencies = powerCap2frequency[0].values().toIntArray();
 		Arrays.sort(frequencies);
+		
+		frequency2powerCap = new Int2DoubleMap[NUMCORES];
+		for (int i = 0; i < NUMCORES; i++) {
+			frequency2powerCap[i] = new Int2DoubleArrayMap(frequencies.length);
+			for (double p : powerCap2frequency[i].keySet()) {
+				
+				frequency2powerCap[i].put(powerCap2frequency[i].get(p), p);
+				
+			}
+		
+		}
+		
+		
+
+		
+		
 	}
 
 	protected double maxPowerCap;
@@ -118,12 +138,19 @@ public class Intel_i7_4770K extends CPU implements RAPL {
 		
 		if (timeMicroseconds != statusChangeTime) {
 			
-			String out = String.format("[cpu@%d:%d] %d %d %d %.3f", 
-					server.getIndexReplica().getId(), server.getId(),
-					this.currentMaxFrequency, this.activeCores,
-					this.statusChangeTime, (timeMicroseconds - this.statusChangeTime) / 1000000.0);
+//			String out = String.format("[cpu@%d:%d] %d %d %d %.3f", 
+//					server.getIndexReplica().getId(), server.getId(),
+//					this.currentMaxFrequency, this.activeCores,
+//					this.statusChangeTime, (timeMicroseconds - this.statusChangeTime) / 1000000.0);
 			
-			((EemDwsSimulator)  server.getSimulator()).println(out);
+			double power = 0.0;
+			if (this.activeCores == 0) {
+				power = IDLE_POWER;
+			} else {
+				power = frequency2powerCap[this.activeCores-1].get(this.currentMaxFrequency);
+			}
+			
+			((EemDwsSimulator)  server.getSimulator()).updateEnergyConsumption(power, this.statusChangeTime, (timeMicroseconds - this.statusChangeTime) / 1000000.0);
 		}
 		
 		// new status

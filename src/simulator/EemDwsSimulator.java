@@ -22,11 +22,13 @@ public class EemDwsSimulator extends Simulator {
 	private QueryBroker broker;
 	private int nonClockCnt; //TODO: is this still used?
 	private PrintWriter pw;
+	private double[] sec2energyConsumption;
 
-	public EemDwsSimulator(String output) throws FileNotFoundException, IOException {
+	public EemDwsSimulator(String output, int simulationDurationInHours) throws FileNotFoundException, IOException {
 		
 		GZIPOutputStream gzip = new GZIPOutputStream(new FileOutputStream(output));	
 		pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(gzip)));
+		sec2energyConsumption = new double[(simulationDurationInHours * 60 * 60) + 1]; //+1, just to be sure;
 		
 	}
 	
@@ -70,10 +72,20 @@ public class EemDwsSimulator extends Simulator {
 		}
 		
 		broker.shutdown(now().getTimeMicroseconds());
+		printEnergy();
 		pw.close();
 	}
 
 	
+	private void printEnergy() {
+		
+		for (int sec = 0; sec < sec2energyConsumption.length; sec++){
+			
+			println(String.format("[energy] %d %.3f", sec, sec2energyConsumption[sec]));
+		}
+		
+	}
+
 	public void schedule(Event e) {
 		
 		if (!(e instanceof Clock)) nonClockCnt++;
@@ -88,5 +100,14 @@ public class EemDwsSimulator extends Simulator {
 	public void println(String string) {
 
 		pw.println(string);
+	}
+	
+	public void updateEnergyConsumption(double power, long statusChangeTimeInMicros, double seconds) {
+
+		long start = statusChangeTimeInMicros;
+        int start_sec = (int) (start / 1_000_000); //start in seconds
+        int end_sec = (int) ((start + (seconds * 1_000_000)) / 1_000_000); //end in seconds
+        double energy_fraction = (power * seconds) / Math.max(1, end_sec - start_sec);
+        for (int b = start_sec; b <= end_sec; b++) sec2energyConsumption[b] += energy_fraction;
 	}
 }
