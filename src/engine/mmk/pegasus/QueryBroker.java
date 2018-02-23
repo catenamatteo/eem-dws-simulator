@@ -3,20 +3,22 @@ package engine.mmk.pegasus;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.math.Quantiles;
+import com.google.common.math.Quantiles.ScaleAndIndex;
 
 import cpu.CPUBuilder;
 import engine.IndexReplica;
 import engine.Shard;
 import eu.nicecode.simulator.Simulator;
 import eu.nicecode.simulator.Time;
-import it.unimi.dsi.fastutil.longs.LongArrayList;
-import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.longs.Long2DoubleRBTreeMap;
+import it.unimi.dsi.fastutil.longs.Long2DoubleSortedMap;
 
 public class QueryBroker extends engine.mmk.QueryBroker {
 
-	protected LongList mv95thtileKeys;
-	protected LongList mv95thtileValues;	
-
+	protected Long2DoubleSortedMap mv95thtile;
+//	protected LongList mv95thtileKeys;
+//	protected DoubleList mv95thtileValues;	
+	protected ScaleAndIndex index;
 	protected final long mv95thtileWindow;
 	protected Time slo;
 	protected Time waitUntil;
@@ -24,46 +26,55 @@ public class QueryBroker extends engine.mmk.QueryBroker {
 	
 	public QueryBroker(Simulator simulator, CPUBuilder cpuBuilder, Time slo, int numOfReplicas, Shard[] shards) {
 		super(simulator, cpuBuilder, numOfReplicas, shards);
-		mv95thtileKeys = new LongArrayList();
-		mv95thtileValues = new LongArrayList();
+//		mv95thtileKeys = new LongArrayList();
+//		mv95thtileValues = new DoubleArrayList();
 		mv95thtileWindow = TimeUnit.SECONDS.toMicros(30);
 		this.slo = slo;
-		waitUntil = new Time(0, TimeUnit.MINUTES);		
+		waitUntil = new Time(0, TimeUnit.MINUTES);
+		mv95thtile = new Long2DoubleRBTreeMap();
+		index = Quantiles.percentiles().index(95);
 	}
 
 	public void receiveResults(long uid, long completionTime) {
 
 		long now = simulator.now().getTimeMicroseconds();
 		
-		mv95thtileKeys.add(now);
-		mv95thtileValues.add(completionTime);
-		int cnt = 0;
-		for (int i = 0; i < mv95thtileKeys.size(); i++) {
-			
-			if (mv95thtileKeys.getLong(i) < now - mv95thtileWindow) {
-				
-				cnt++;
-				
-			} else {
-				
-				break;
-			}
-				
-		}
-		if (cnt > 0) {
-			
-			for (int i = 0; i < cnt; i++) {
-				
-				mv95thtileKeys.removeLong(0);
-				mv95thtileValues.removeLong(0);
-				
-			}
-		}
+		mv95thtile.put(now, completionTime);
+		Long2DoubleSortedMap tailMap = mv95thtile.tailMap(now - mv95thtileWindow);
+		if (mv95thtile.size() != tailMap.size())
+			mv95thtile = new Long2DoubleRBTreeMap(tailMap);
+		
+//		mv95thtileKeys.add(now);
+//		mv95thtileValues.add(completionTime);
+//		int cnt = 0;
+//		for (int i = 0; i < mv95thtileKeys.size(); i++) {
+//			
+//			if (mv95thtileKeys.getLong(i) < now - mv95thtileWindow) {
+//				
+//				cnt++;
+//				
+//			} else {
+//				
+//				break;
+//			}
+//				
+//		}
+//		if (cnt > 0) {
+//			
+//			for (int i = 0; i < cnt; i++) {
+//				
+//				mv95thtileKeys.removeLong(0);
+//				mv95thtileValues.removeDouble(0);
+//				
+//			}
+//		}
 		
 		//rule engine
 		if (simulator.now().compareTo(waitUntil) >= 0) {
 
-			double mv95thtileDouble = Quantiles.percentiles().index(95).compute(mv95thtileValues);
+			
+			
+			double mv95thtileDouble = index.computeInPlace(mv95thtile.values().toDoubleArray());
 //			double mvAvgDouble = percent;
 //			if (!mvAvgValues.isEmpty()) {
 //				for (long c : mvAvgValues)
@@ -73,7 +84,7 @@ public class QueryBroker extends engine.mmk.QueryBroker {
 
 			if (mv95thtileDouble > slo.getTimeMicroseconds()) {
 
-				waitUntil = new Time(simulator.now().getTimeMicroseconds() + TimeUnit.MINUTES.toMicros(1),
+				waitUntil = new Time(simulator.now().getTimeMicroseconds() + TimeUnit.MINUTES.toMicros(5),
 						TimeUnit.MICROSECONDS);
 				
 				setMaxCPUPowerCap();
