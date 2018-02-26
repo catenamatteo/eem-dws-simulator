@@ -6,105 +6,182 @@ import cpu.CPU;
 import cpu.Core;
 import cpu.RAPL;
 import engine.ShardServer;
-import it.unimi.dsi.fastutil.doubles.Double2IntAVLTreeMap;
-import it.unimi.dsi.fastutil.doubles.Double2IntSortedMap;
-import it.unimi.dsi.fastutil.ints.Int2DoubleArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import simulator.EemDwsSimulator;
+
+class PowerModel {
+	
+	static final double[][] powerCap2frequency;
+	static final int[][] frequency2powerCap;
+	static final double IDLE;
+	
+	static final double minPowerCap;
+	static final double maxPowerCap;
+	
+	private PowerModel() {}
+	
+	static {
+		
+		IDLE=0.8;
+		
+		powerCap2frequency = new double[Intel_i7_4770K.NUMCORES][15];
+		frequency2powerCap = new int[Intel_i7_4770K.NUMCORES][15];
+		
+		powerCap2frequency[0][0]=1.2;
+		frequency2powerCap[0][0]=800000;
+		powerCap2frequency[0][1]=1.6;
+		frequency2powerCap[0][1]=1000000;
+		powerCap2frequency[0][2]=2.3;
+		frequency2powerCap[0][2]=1200000;
+		powerCap2frequency[0][3]=3.2;
+		frequency2powerCap[0][3]=1400000;
+		powerCap2frequency[0][4]=3.9;
+		frequency2powerCap[0][4]=1600000;
+		powerCap2frequency[0][5]=4.8;
+		frequency2powerCap[0][5]=1800000;
+		powerCap2frequency[0][6]=5.7;
+		frequency2powerCap[0][6]=2000000;
+		powerCap2frequency[0][7]=5.9;
+		frequency2powerCap[0][7]=2100000;
+		powerCap2frequency[0][8]=6.8;
+		frequency2powerCap[0][8]=2300000;
+		powerCap2frequency[0][9]=7.9;
+		frequency2powerCap[0][9]=2500000;
+		powerCap2frequency[0][10]=8.9;
+		frequency2powerCap[0][10]=2700000;
+		powerCap2frequency[0][11]=9.9;
+		frequency2powerCap[0][11]=2900000;
+		powerCap2frequency[0][12]=11.2;
+		frequency2powerCap[0][12]=3100000;
+		powerCap2frequency[0][13]=12.3;
+		frequency2powerCap[0][13]=3300000;
+		powerCap2frequency[0][14]=14.1;
+		frequency2powerCap[0][14]=3500000;
+		powerCap2frequency[1][0]=2.3;
+		frequency2powerCap[1][0]=800000;
+		powerCap2frequency[1][1]=3.3;
+		frequency2powerCap[1][1]=1000000;
+		powerCap2frequency[1][2]=5.1;
+		frequency2powerCap[1][2]=1200000;
+		powerCap2frequency[1][3]=6.2;
+		frequency2powerCap[1][3]=1400000;
+		powerCap2frequency[1][4]=7.5;
+		frequency2powerCap[1][4]=1600000;
+		powerCap2frequency[1][5]=8.7;
+		frequency2powerCap[1][5]=1800000;
+		powerCap2frequency[1][6]=9.6;
+		frequency2powerCap[1][6]=2000000;
+		powerCap2frequency[1][7]=10.0;
+		frequency2powerCap[1][7]=2100000;
+		powerCap2frequency[1][8]=11.3;
+		frequency2powerCap[1][8]=2300000;
+		powerCap2frequency[1][9]=13.5;
+		frequency2powerCap[1][9]=2500000;
+		powerCap2frequency[1][10]=14.9;
+		frequency2powerCap[1][10]=2700000;
+		powerCap2frequency[1][11]=16.1;
+		frequency2powerCap[1][11]=2900000;
+		powerCap2frequency[1][12]=17.7;
+		frequency2powerCap[1][12]=3100000;
+		powerCap2frequency[1][13]=19.6;
+		frequency2powerCap[1][13]=3300000;
+		powerCap2frequency[1][14]=22.4;
+		frequency2powerCap[1][14]=3500000;
+		powerCap2frequency[2][0]=3.7;
+		frequency2powerCap[2][0]=800000;
+		powerCap2frequency[2][1]=5.2;
+		frequency2powerCap[2][1]=1000000;
+		powerCap2frequency[2][2]=7.9;
+		frequency2powerCap[2][2]=1200000;
+		powerCap2frequency[2][3]=9.0;
+		frequency2powerCap[2][3]=1400000;
+		powerCap2frequency[2][4]=10.6;
+		frequency2powerCap[2][4]=1600000;
+		powerCap2frequency[2][5]=11.9;
+		frequency2powerCap[2][5]=1800000;
+		powerCap2frequency[2][6]=13.5;
+		frequency2powerCap[2][6]=2000000;
+		powerCap2frequency[2][7]=14.2;
+		frequency2powerCap[2][7]=2100000;
+		powerCap2frequency[2][8]=15.9;
+		frequency2powerCap[2][8]=2300000;
+		powerCap2frequency[2][9]=18.9;
+		frequency2powerCap[2][9]=2500000;
+		powerCap2frequency[2][10]=20.7;
+		frequency2powerCap[2][10]=2700000;
+		powerCap2frequency[2][11]=22.8;
+		frequency2powerCap[2][11]=2900000;
+		powerCap2frequency[2][12]=25.5;
+		frequency2powerCap[2][12]=3100000;
+		powerCap2frequency[2][13]=28.2;
+		frequency2powerCap[2][13]=3300000;
+		powerCap2frequency[2][14]=31.2;
+		frequency2powerCap[2][14]=3500000;
+		powerCap2frequency[3][0]=4.6;
+		frequency2powerCap[3][0]=800000;
+		powerCap2frequency[3][1]=5.7;
+		frequency2powerCap[3][1]=1000000;
+		powerCap2frequency[3][2]=8.7;
+		frequency2powerCap[3][2]=1200000;
+		powerCap2frequency[3][3]=10.2;
+		frequency2powerCap[3][3]=1400000;
+		powerCap2frequency[3][4]=11.5;
+		frequency2powerCap[3][4]=1600000;
+		powerCap2frequency[3][5]=13.0;
+		frequency2powerCap[3][5]=1800000;
+		powerCap2frequency[3][6]=14.7;
+		frequency2powerCap[3][6]=2000000;
+		powerCap2frequency[3][7]=15.6;
+		frequency2powerCap[3][7]=2100000;
+		powerCap2frequency[3][8]=17.6;
+		frequency2powerCap[3][8]=2300000;
+		powerCap2frequency[3][9]=20.5;
+		frequency2powerCap[3][9]=2500000;
+		powerCap2frequency[3][10]=23.0;
+		frequency2powerCap[3][10]=2700000;
+		powerCap2frequency[3][11]=25.4;
+		frequency2powerCap[3][11]=2900000;
+		powerCap2frequency[3][12]=28.3;
+		frequency2powerCap[3][12]=3100000;
+		powerCap2frequency[3][13]=31.0;
+		frequency2powerCap[3][13]=3300000;
+		powerCap2frequency[3][14]=34.2;
+		frequency2powerCap[3][14]=3500000;
+
+		
+		minPowerCap = powerCap2frequency[3][0]; // we guarantee that all cores can run, at least at min freq
+		maxPowerCap = powerCap2frequency[3][14];
+		
+	}
+
+	public static double getPower(int activeCores, int currentMaxFrequency) {
+		
+		activeCores = Math.max(0, activeCores-1);
+		
+		int idx = Arrays.binarySearch(frequency2powerCap[activeCores], currentMaxFrequency);
+		if (idx < 0) idx = - idx - 1;
+		idx = Math.min(idx, frequency2powerCap[activeCores].length - 1);
+		return powerCap2frequency[activeCores][idx];
+		
+	}
+
+	public static int getFrequency(int activeCores, double powerCap) {
+
+		activeCores = Math.max(0, activeCores-1);
+		
+		int idx = Arrays.binarySearch(powerCap2frequency[activeCores], powerCap);
+		if (idx < 0) idx = - idx - 1;
+		idx = Math.min(idx, powerCap2frequency[activeCores].length - 1);
+		return frequency2powerCap[activeCores][idx];
+	}
+	
+}
+
 
 public class Intel_i7_4770K extends CPU implements RAPL {
 
-	static final Double2IntSortedMap[] powerCap2frequency;
-	static final Int2DoubleMap[] frequency2powerCap;
-	static final int[] frequencies;
-	static final int NUMCORES = 4;
-	static final double IDLE_POWER = 0.8;
-
-	static {
-
-		powerCap2frequency = new Double2IntSortedMap[NUMCORES];
-		for (int i = 0; i < NUMCORES; i++)
-			powerCap2frequency[i] = new Double2IntAVLTreeMap();
-		powerCap2frequency[0].put(1.2, 800000);
-		powerCap2frequency[0].put(1.6, 1000000);
-		powerCap2frequency[0].put(2.3, 1200000);
-		powerCap2frequency[0].put(3.2, 1400000);
-		powerCap2frequency[0].put(3.9, 1600000);
-		powerCap2frequency[0].put(4.8, 1800000);
-		powerCap2frequency[0].put(5.7, 2000000);
-		powerCap2frequency[0].put(5.9, 2100000);
-		powerCap2frequency[0].put(6.8, 2300000);
-		powerCap2frequency[0].put(7.9, 2500000);
-		powerCap2frequency[0].put(8.9, 2700000);
-		powerCap2frequency[0].put(9.9, 2900000);
-		powerCap2frequency[0].put(11.2, 3100000);
-		powerCap2frequency[0].put(12.3, 3300000);
-		powerCap2frequency[0].put(14.1, 3500000);
-		powerCap2frequency[1].put(10.0, 2100000);
-		powerCap2frequency[1].put(11.3, 2300000);
-		powerCap2frequency[1].put(2.3, 800000);
-		powerCap2frequency[1].put(3.3, 1000000);
-		powerCap2frequency[1].put(5.1, 1200000);
-		powerCap2frequency[1].put(6.2, 1400000);
-		powerCap2frequency[1].put(7.5, 1600000);
-		powerCap2frequency[1].put(8.7, 1800000);
-		powerCap2frequency[1].put(9.6, 2000000);
-		powerCap2frequency[1].put(13.5, 2500000);
-		powerCap2frequency[1].put(14.9, 2700000);
-		powerCap2frequency[1].put(16.1, 2900000);
-		powerCap2frequency[1].put(17.7, 3100000);
-		powerCap2frequency[1].put(19.6, 3300000);
-		powerCap2frequency[1].put(22.4, 3500000);
-		powerCap2frequency[2].put(3.7, 800000);
-		powerCap2frequency[2].put(5.2, 1000000);
-		powerCap2frequency[2].put(7.9, 1200000);
-		powerCap2frequency[2].put(9.0, 1400000);
-		powerCap2frequency[2].put(10.6, 1600000);
-		powerCap2frequency[2].put(11.9, 1800000);
-		powerCap2frequency[2].put(13.5, 2000000);
-		powerCap2frequency[2].put(14.2, 2100000);
-		powerCap2frequency[2].put(15.9, 2300000);
-		powerCap2frequency[2].put(18.9, 2500000);
-		powerCap2frequency[2].put(20.7, 2700000);
-		powerCap2frequency[2].put(22.8, 2900000);
-		powerCap2frequency[2].put(25.5, 3100000);
-		powerCap2frequency[2].put(28.2, 3300000);
-		powerCap2frequency[2].put(31.2, 3500000);
-		powerCap2frequency[3].put(4.6, 800000);
-		powerCap2frequency[3].put(5.7, 1000000);
-		powerCap2frequency[3].put(8.7, 1200000);
-		powerCap2frequency[3].put(10.2, 1400000);
-		powerCap2frequency[3].put(11.5, 1600000);
-		powerCap2frequency[3].put(13.0, 1800000);
-		powerCap2frequency[3].put(14.7, 2000000);
-		powerCap2frequency[3].put(15.6, 2100000);
-		powerCap2frequency[3].put(17.6, 2300000);
-		powerCap2frequency[3].put(20.5, 2500000);
-		powerCap2frequency[3].put(23.0, 2700000);
-		powerCap2frequency[3].put(25.4, 2900000);
-		powerCap2frequency[3].put(28.3, 3100000);
-		powerCap2frequency[3].put(31.0, 3300000);
-		powerCap2frequency[3].put(34.2, 3500000);
-
-		frequencies = powerCap2frequency[0].values().toIntArray();
-		Arrays.sort(frequencies);
-		
-		frequency2powerCap = new Int2DoubleMap[NUMCORES];
-		for (int i = 0; i < NUMCORES; i++) {
-			frequency2powerCap[i] = new Int2DoubleArrayMap(frequencies.length);
-			for (double p : powerCap2frequency[i].keySet()) {
-				
-				frequency2powerCap[i].put(powerCap2frequency[i].get(p), p);
-				
-			}
-		
-		}
-		
-		
-
-		
-		
-	}
+	
+	static final int[] frequencies = PowerModel.frequency2powerCap[0];
+	static final int NUMCORES = 4; //we ignore hyperthreading
 
 	protected double maxPowerCap;
 	protected double minPowerCap;
@@ -117,9 +194,7 @@ public class Intel_i7_4770K extends CPU implements RAPL {
 
 		super(server, NUMCORES);
 
-		this.maxPowerCap = powerCap2frequency[powerCap2frequency.length - 1].lastDoubleKey();
-		this.minPowerCap = powerCap2frequency[powerCap2frequency.length - 1].firstDoubleKey(); // we guarantee that all cores can run, at least at min freq
-		this.powerCap = maxPowerCap;
+		this.powerCap = PowerModel.maxPowerCap;
 
 		this.currentMaxFrequency = getMinFrequency();
 		this.activeCores = 0;
@@ -145,9 +220,9 @@ public class Intel_i7_4770K extends CPU implements RAPL {
 			
 			double power = 0.0;
 			if (this.activeCores == 0) {
-				power = IDLE_POWER;
+				power = PowerModel.IDLE;
 			} else {
-				power = frequency2powerCap[this.activeCores-1].get(this.currentMaxFrequency);
+				power = PowerModel.getPower(this.activeCores, this.currentMaxFrequency);
 			}
 			
 			((EemDwsSimulator)  server.getSimulator()).updateEnergyConsumption(power, this.statusChangeTime, (timeMicroseconds - this.statusChangeTime) / 1000000.0);
@@ -173,21 +248,7 @@ public class Intel_i7_4770K extends CPU implements RAPL {
 		int currentMaxFrequency = getMinFrequency();
 
 		int activeCores = activeCores();
-		Double2IntSortedMap map = powerCap2frequency[Math.max(0, activeCores - 1)];
-		Double2IntSortedMap headMap = map.headMap(powerCap + 0.00001);
-		double ldk = 0.0;
-		switch (headMap.size()) {
-		case 0:
-			ldk = map.firstDoubleKey();
-			break;
-		case 1:
-			ldk = headMap.firstDoubleKey();
-			break;
-		default:
-			ldk = headMap.lastDoubleKey();
-			break;
-		}
-		final int maxPossibleFrequency = map.get(ldk);
+		final int maxPossibleFrequency = PowerModel.getFrequency(activeCores, powerCap);
 
 		for (Core c : cores) {
 
@@ -202,9 +263,7 @@ public class Intel_i7_4770K extends CPU implements RAPL {
 	int getFrequency(int frequency) {
 
 		int activeCores = activeCores();
-		Double2IntSortedMap map = powerCap2frequency[Math.max(0, activeCores - 1)];
-		double ldk = map.headMap(powerCap + 0.00001).lastDoubleKey();
-		return Math.min(frequency, map.get(ldk));
+		return Math.min(frequency, PowerModel.getFrequency(activeCores, powerCap));
 
 	}
 

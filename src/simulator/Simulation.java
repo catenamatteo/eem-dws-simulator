@@ -36,7 +36,7 @@ public class Simulation {
 		QueryBroker broker = null;
 		switch (method.toLowerCase()) {
 		case "pesos":
-			broker = getPESOSQueryBroker(simulator, cpuBuilder, numOfReplicas, shardB, shardA2, shardA3, shardA4, shardA5);
+			broker = getPESOSQueryBroker(simulator, cpuBuilder, numOfReplicas, shardB);
 			break;
 		case "pegasus":
 			broker = getPEGASUSQueryBroker(simulator, cpuBuilder, numOfReplicas, shardB, shardA2, shardA3, shardA4, shardA5);
