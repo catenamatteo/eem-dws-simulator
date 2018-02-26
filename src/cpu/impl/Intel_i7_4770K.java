@@ -183,8 +183,6 @@ public class Intel_i7_4770K extends CPU implements RAPL {
 	static final int[] frequencies = PowerModel.frequency2powerCap[0];
 	static final int NUMCORES = 4; //we ignore hyperthreading
 
-	protected double maxPowerCap;
-	protected double minPowerCap;
 	protected double powerCap;
 
 	private int currentMaxFrequency;
@@ -294,17 +292,17 @@ public class Intel_i7_4770K extends CPU implements RAPL {
 	@Override
 	public void setMaxPowerCap(long timeMicroseconds) {
 
-		setPowerCap(maxPowerCap, timeMicroseconds);
+		setPowerCap(PowerModel.maxPowerCap, timeMicroseconds);
 	}
 
 	@Override
 	public void setPowerCap(double powerCap, long timeMicroseconds) {
 
 		double prevPowerCap = this.powerCap;
-		if (powerCap < minPowerCap)
-			powerCap = minPowerCap;
-		else if (powerCap > maxPowerCap)
-			powerCap = maxPowerCap;
+		if (powerCap < PowerModel.minPowerCap)
+			powerCap = PowerModel.minPowerCap;
+		else if (powerCap > PowerModel.maxPowerCap)
+			powerCap = PowerModel.maxPowerCap;
 		this.powerCap = powerCap;
 		if (this.powerCap != prevPowerCap)
 			update(timeMicroseconds);
