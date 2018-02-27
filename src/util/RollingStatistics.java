@@ -1,6 +1,9 @@
 package util;
 
+
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import eu.nicecode.simulator.Simulator;
@@ -13,19 +16,17 @@ public class RollingStatistics {
 
 	protected Simulator simulator;
 	protected Long2ObjectSortedMap<DoubleList> sec2vals;
-	protected DoubleList vals;
+	protected List<Double> vals;
 	protected long timeInSec;
 	protected long windowInSec;
-	protected boolean sorted;
 	
 	public RollingStatistics(Simulator simulator, long windowInSec) {
 		
 		this.simulator = simulator;
 		sec2vals = new Long2ObjectAVLTreeMap<>();
-		vals = new DoubleArrayList();
+		vals = new LinkedList<>();
 		this.timeInSec = getTimeInSec();
 		this.windowInSec = windowInSec;
-		sorted = false;
 	}
 	
 	private long updateTime() {
@@ -36,7 +37,7 @@ public class RollingStatistics {
 			sec2vals = new Long2ObjectAVLTreeMap<>(sec2vals.tailMap(callTimeInSec - windowInSec));
 			vals.clear();
 			for (DoubleList l : sec2vals.values()) vals.addAll(l); //TODO: can we improve this if we keep buckets sorted and then we merge ala mergesort?		
-			sorted = false;
+			Collections.sort(vals);
 		}
 		
 		return timeInSec = callTimeInSec;
@@ -51,8 +52,9 @@ public class RollingStatistics {
 		if (!sec2vals.containsKey(callTimeInSec))
 			sec2vals.put(callTimeInSec, new DoubleArrayList());
 		sec2vals.get(callTimeInSec).add(val);
-		vals.add(val);
-		sorted = false;
+		int idx = Collections.binarySearch(vals, val);
+		if (idx < 0) idx = -idx -1;
+		vals.add(idx, val);
 		
 	}
 	
@@ -66,21 +68,10 @@ public class RollingStatistics {
 			
 		} else {
 			
-			sort();
-			
 			int idx = ((int) Math.ceil((index / 100.0) * vals.size())) - 1;
-			return vals.getDouble(idx);
+			return vals.get(idx);
 			
 		}	
-	}
-	
-	private void sort() {
-
-		if (!sorted) {
-			Collections.sort(vals);
-			sorted=true;
-		}
-		
 	}
 	
 	private long getTimeInSec() {
