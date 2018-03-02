@@ -7,11 +7,11 @@ import engine.IndexReplica;
 import engine.Shard;
 import eu.nicecode.simulator.Simulator;
 import eu.nicecode.simulator.Time;
-import util.RollingStatistics;
+import util.MovingStatistics;
 
 public class QueryBroker extends engine.mmk.QueryBroker {
 
-	protected RollingStatistics mv95thtile;
+	protected MovingStatistics mv95thtile;
 	protected long sloMicros;
 	protected Time waitUntil;
 	
@@ -21,7 +21,7 @@ public class QueryBroker extends engine.mmk.QueryBroker {
 
 		sloMicros = slo.getTimeMicroseconds();
 		waitUntil = new Time(0, TimeUnit.MINUTES);
-		mv95thtile = new RollingStatistics(simulator, 30);
+		mv95thtile = new MovingStatistics(simulator, 30, TimeUnit.SECONDS);
 	}
 
 	public void receiveResults(long uid, long completionTime) {
@@ -29,11 +29,9 @@ public class QueryBroker extends engine.mmk.QueryBroker {
 		
 		mv95thtile.add(completionTime);
 		
-		
 		//rule engine
 		if (simulator.now().compareTo(waitUntil) >= 0) {
 
-			
 			double mv95thtileMicros = mv95thtile.getPercentile(95);
 
 			if (mv95thtileMicros > sloMicros) {
