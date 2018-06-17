@@ -43,7 +43,7 @@ Also, for each (simulated) second we will have an energy line in the output, lik
 ```
 This tell us that the search engine has consumed 47.728 Joules at second 86395 of the simulation.
 
-##How to munge the output file
+## How to munge the output file
 To get the energy consumption (1 entry per second, value in Joules):  
 `zcat output.gz | grep energy | cut -f3 -d' ' > output.energy`
 
