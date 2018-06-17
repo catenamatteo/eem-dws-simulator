@@ -33,13 +33,13 @@ The output file has two kinds of entries:
 
 For each query in the input, we will have a broker line in the output, like:
 ```
-[broker] 4 14.000`
+[broker] 4 14.000
 ```
 This tell us that the search engine has received a query at second 4 (2nd field) and that its *completion time* was 14 milliseconds (3rd field).
 
 Also, for each (simulated) second we will have an energy line in the output, like:
 ```
-[energy] 86395 47.728`
+[energy] 86395 47.728
 ```
 This tell us that the search engine has consumed 47.728 Joules at second 86395 of the simulation.
 
