@@ -51,3 +51,7 @@ To get the 95th-tile latency (1 entry per second, 30-seconds moving 95th-tile la
 `python3 scripts/mungetime-gzip.py output.gz > output.95th-tile`
 
 Once this two files are generated, information can be plotted using scripts/plot_energy.py and scripts/plot_times.py (filenames are hardcoded, they have to be manually changed in the scripts).
+
+## References
+1. Lo et al. 2014. Towards energy proportionality for large-scale latency-critical workloads. ISCA '14.
+2. Catena and Tonellotto. 2017. Energy-Efficient Query Processing in Web Search Engines. TKDE.
