@@ -8,6 +8,11 @@ import eu.nicecode.simulator.Simulator;
 import query.Query;
 import query.RunningQuery;
 
+/**
+ * Basically, this is a thread which process queries. It runs on a {@code Core} of a {@code ShardServer}.
+ * @author matteo
+ *
+ */
 public abstract class QueryMatcher implements Agent {
 
 	protected ShardServer server;

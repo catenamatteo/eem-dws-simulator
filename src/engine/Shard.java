@@ -57,7 +57,7 @@ public class Shard {
 			long qid = Long.parseLong(fields[0]);
 			QueryTemplate qt = templates.get(qid);
 			for (int i = 1; i < fields.length; i++) {
-				Float t = new Float(Float.parseFloat(fields[i]) * 1000); //ms to micros
+				Float t = Float.parseFloat(fields[i]) * 1000; //ms to micros
 				qt.serviceTimes.put(frequencies[i-1], t.longValue());
 			}
 		}
