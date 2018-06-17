@@ -18,10 +18,13 @@ OUTPUT_PATH: the path where the output is going to be saved (the produced file w
 
 ##Input format
 The input format has a line for each (simulated) query sent to the search engine. E.g.,
-```0 2378
+```
+0 2378
 250 2911
 500 8458
-750 1522```
+750 1522
+```
+
 This snippet shows 4 queries. At millisecond 0 (1st field), the query with id 2378 (2nd field) is sent to the system; at millisecond 250 the query with id 2911 is sent to the system; and so on. 
 
 ## Output format
