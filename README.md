@@ -1,5 +1,8 @@
 # Simulator for '**Efficient Energy Management in Web Search Engines**'
 
+## Dependencies:
+You will need jades from https://github.com/catenamatteo/jades and to install it on your machine using mvn. mvn should automatically take of the other dependencies. 
+
 ## Usage:
 `java -cp eem-dws-simulator-0.0.1-SNAPSHOT-jar-with-dependencies.jar simulator.Simulation METHOD INPUT_PATH NUM_OF_REPLICAS SIMULATION_HOURS OUTPUT_PATH`
 
